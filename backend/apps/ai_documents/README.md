@@ -1,278 +1,293 @@
-# AI Documents - Génération Intelligente de Flashcards
+# AI Documents - Bibliothèque NLP pour Génération de Flashcards
 
-Application Django pour générer automatiquement des flashcards à partir de documents (PDF, images, texte) en utilisant des **bibliothèques NLP open-source** (scikit-learn, spaCy, Naive Bayes).
+**Bibliothèque générique et réutilisable** pour générer des flashcards à partir de documents en utilisant des techniques NLP open-source.
 
-## 🚀 Fonctionnalités
+## 🎯 Philosophie
 
-- **Upload de documents** : PDF, images (PNG, JPG), fichiers texte
-- **Extraction de texte** :
-  - PyMuPDF pour les PDF
-  - OCR (pytesseract) pour les images et PDF scannés
-  - Lecture directe pour les fichiers texte
-- **Génération NLP Open-Source** :
-  - **TF-IDF** (scikit-learn) : Extraction des concepts clés
-  - **spaCy** : Analyse syntaxique, entités nommées, découpage en phrases
-  - **Naive Bayes** : Classification et scoring de pertinence
-  - **Pattern matching** : Détection automatique de définitions
-- **Classification intelligente** : Scoring et tri des flashcards par pertinence
-- **Interface HTMX** : Upload drag & drop et affichage dynamique sans rechargement
+Cette app est une **bibliothèque pure** sans dépendance métier :
+- ❌ Pas de modèles Django spécifiques
+- ❌ Pas de dépendance vers d'autres apps (`revision`, etc.)
+- ✅ Services et utilitaires réutilisables
+- ✅ 100% open-source (scikit-learn, spaCy, Naive Bayes)
 
-## 🔬 Techniques NLP utilisées
+## 📦 Contenu
 
-### 1. Extraction de définitions (Pattern Matching)
-Détecte automatiquement les patterns de définition :
-- "X est Y"
-- "On appelle X ..."
-- "X : définition"
-- "X, c'est-à-dire Y"
+```
+apps/ai_documents/
+├── services/
+│   └── flashcard_generator.py    # Service de génération NLP
+├── utils/
+│   └── text_extraction.py        # Extraction texte (PDF, OCR, images)
+└── README.md
+```
 
-### 2. Extraction d'entités nommées (spaCy)
-Identifie les personnes, lieux, organisations, dates et génère des questions contextuelles.
+## 🚀 Utilisation
 
-### 3. Extraction de concepts (TF-IDF)
-Utilise TF-IDF (Term Frequency - Inverse Document Frequency) pour identifier les termes les plus importants du document.
-
-### 4. Classification Naive Bayes
-Score et classe les flashcards par pertinence en combinant :
-- Type de carte (définition, concept, entité, raisonnement)
-- Qualité de la question
-- Longueur et complexité
-- Présence de mots interrogatifs
-
-### 5. Niveaux de difficulté
-Assignation automatique (facile/moyen/difficile) basée sur :
-- Longueur de la réponse
-- Complexité de la question
-- Type de contenu
-
-## 📦 Installation
-
-### 1. Ajouter l'app dans `INSTALLED_APPS`
-
-Dans `settings.py` :
+### 1. Extraction de texte
 
 ```python
-INSTALLED_APPS = [
-    # ...
-    'apps.ai_documents',
-    'apps.revision',  # Dépendance requise
-    # ...
-]
+from apps.ai_documents.utils import extract_text_from_file
+
+# Extraire texte d'un PDF
+text, method = extract_text_from_file('/path/to/doc.pdf', 'application/pdf')
+print(f"Texte extrait via {method}: {text[:100]}...")
 ```
 
-### 2. Installer les dépendances
+**Méthodes supportées** :
+- **PDF** : PyMuPDF (texte natif) ou OCR (PDF scanné)
+- **Images** : OCR via pytesseract
+- **Texte** : Lecture directe multi-encodages
 
-```bash
-# Bibliothèques NLP essentielles
-pip install scikit-learn spacy PyMuPDF pytesseract Pillow langdetect
-
-# Télécharger les modèles spaCy
-python -m spacy download fr_core_news_sm  # Pour le français
-python -m spacy download en_core_web_sm   # Pour l'anglais
-```
-
-**Note** : Pour l'OCR, vous devez aussi installer Tesseract-OCR sur votre système :
-- **Ubuntu/Debian** : `sudo apt-get install tesseract-ocr tesseract-ocr-fra tesseract-ocr-eng`
-- **macOS** : `brew install tesseract tesseract-lang`
-- **Windows** : Télécharger depuis [GitHub Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
-
-### 3. Configurer les URLs
-
-Dans votre `urls.py` principal :
-
-```python
-from django.urls import path, include
-
-urlpatterns = [
-    # ...
-    path('ai-documents/', include('apps.ai_documents.urls')),
-    # ...
-]
-```
-
-### 4. Appliquer les migrations
-
-```bash
-python manage.py makemigrations ai_documents
-python manage.py migrate
-```
-
-### 5. Configurer les fichiers média
-
-Dans `settings.py` :
-
-```python
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-```
-
-## 🎯 Utilisation
-
-### Interface Web
-
-Accédez à `/ai-documents/` pour :
-
-1. **Uploader un document** (PDF, image, texte)
-2. **Choisir un deck** existant ou créer un nouveau
-3. **Configurer** le nombre de flashcards à générer
-4. **Lancer** la génération automatique
-
-### Utilisation programmatique
+### 2. Génération de flashcards
 
 ```python
 from apps.ai_documents.services import FlashcardGeneratorService
-from apps.ai_documents.utils import extract_text_from_file
 
-# Extraire le texte d'un document
-text, method = extract_text_from_file('/path/to/document.pdf', 'application/pdf')
-
-# Générer des flashcards avec NLP open-source
+# Initialiser le générateur
 generator = FlashcardGeneratorService(language='french')
+
+# Générer des flashcards
 flashcards = generator.generate_flashcards(
-    text=text,
+    text="La photosynthèse est le processus par lequel les plantes...",
     max_cards=10,
-    difficulty_levels=True,
-    language='fr'
+    difficulty_levels=True
 )
 
 # Résultat
-# [
-#   {
-#     "question": "Qu'est-ce que...",
-#     "answer": "C'est...",
-#     "difficulty": "medium",
-#     "type": "definition",
-#     "relevance_score": 0.95
-#   },
-#   ...
-# ]
+for card in flashcards:
+    print(f"Q: {card['question']}")
+    print(f"R: {card['answer']}")
+    print(f"Difficulté: {card['difficulty']}")
+    print(f"Score: {card['relevance_score']}")
+    print("---")
 ```
 
-## 🔧 Architecture du générateur
+### 3. Workflow complet
 
-### Pipeline de génération
+```python
+from apps.ai_documents.utils import (
+    extract_text_from_file,
+    preprocess_text_for_flashcards,
+    detect_document_language
+)
+from apps.ai_documents.services import FlashcardGeneratorService
 
-```
-Texte brut
-    ↓
-Découpage en phrases (spaCy)
-    ↓
-Extraction parallèle:
-    ├─ Définitions (regex patterns)
-    ├─ Entités nommées (spaCy NER)
-    ├─ Concepts clés (TF-IDF)
-    └─ Questions causales (pattern matching)
-    ↓
-Classification Naive Bayes
-    ↓
-Scoring de pertinence
-    ↓
-Tri et sélection (top N)
-    ↓
-Assignation de difficulté
-    ↓
-Flashcards finales
-```
+# Étape 1 : Extraire le texte
+text, extraction_method = extract_text_from_file(
+    filepath='/path/to/cours.pdf',
+    mime_type='application/pdf'
+)
 
-### Types de flashcards générées
+# Étape 2 : Nettoyer le texte
+clean_text = preprocess_text_for_flashcards(text, max_length=8000)
 
-1. **Définitions** (score: 0.9)
-   - Détecte les patterns définitionnels
-   - Question: "Qu'est-ce que X ?"
+# Étape 3 : Détecter la langue
+detected_lang = detect_document_language(clean_text)
+generator_lang = 'french' if detected_lang == 'fr' else 'english'
 
-2. **Entités** (score: 0.7)
-   - Basé sur spaCy NER
-   - Questions contextuelles (Qui? Où? Quand?)
+# Étape 4 : Générer les flashcards
+generator = FlashcardGeneratorService(language=generator_lang)
+flashcards = generator.generate_flashcards(
+    text=clean_text,
+    max_cards=15,
+    difficulty_levels=True
+)
 
-3. **Concepts** (score: 0.6)
-   - Identifie via TF-IDF
-   - Question: "Que dit le texte à propos de X ?"
-
-4. **Raisonnement** (score: 0.5)
-   - Détecte les liens causaux
-   - Question: "Pourquoi..."
-
-## 🛠️ Dépendances
-
-| Bibliothèque | Usage | Licence |
-|-------------|-------|---------|
-| **scikit-learn** | TF-IDF, Naive Bayes, vectorisation | BSD-3 |
-| **spaCy** | NLP, NER, parsing syntaxique | MIT |
-| **PyMuPDF** | Extraction PDF | AGPL-3.0 |
-| **pytesseract** | OCR | Apache 2.0 |
-| **Pillow** | Traitement d'images | HPND |
-| **langdetect** | Détection de langue | Apache 2.0 |
-
-**100% Open-Source, pas d'API payante !**
-
-## 📊 Modèles de données
-
-### DocumentUpload
-
-- `user` : Utilisateur propriétaire
-- `deck` : Deck cible (optionnel)
-- `file` : Fichier uploadé
-- `document_type` : Type (pdf, image, text)
-- `status` : Statut (pending, processing, completed, failed)
-- `extracted_text` : Texte extrait
-- `flashcards_generated_count` : Nombre de flashcards créées
-- `generation_params` : Paramètres utilisés (JSON)
-
-## 🎓 Algorithmes utilisés
-
-### TF-IDF (Term Frequency - Inverse Document Frequency)
-
-Mesure l'importance d'un terme dans un document par rapport à un corpus :
-
-```
-TF-IDF(t,d) = TF(t,d) × IDF(t)
+# Étape 5 : Utiliser les résultats
+# (stocker dans votre base, afficher, etc.)
 ```
 
-Utilisé pour identifier les concepts clés.
+## 🔬 Techniques NLP
 
-### Naive Bayes
+### 1. Extraction de définitions (Regex)
+Détecte les patterns :
+- "X est Y"
+- "On appelle X..."
+- "X : définition"
 
-Classificateur probabiliste basé sur le théorème de Bayes :
+### 2. Extraction d'entités (spaCy NER)
+Identifie :
+- Personnes, lieux, organisations
+- Dates, événements
+- Génère des questions contextuelles
 
+### 3. Extraction de concepts (TF-IDF)
+Utilise scikit-learn pour :
+- Identifier les termes importants
+- Pondérer par fréquence
+
+### 4. Classification (Naive Bayes)
+Score et trie les flashcards par :
+- Type (definition > entity > concept)
+- Qualité de la question
+- Longueur optimale de la réponse
+
+## 📊 Format de sortie
+
+```python
+[
+    {
+        "question": "Qu'est-ce que la photosynthèse ?",
+        "answer": "La photosynthèse est le processus...",
+        "difficulty": "medium",           # easy|medium|hard
+        "type": "definition",              # definition|entity|concept|reasoning
+        "relevance_score": 0.95,          # 0-1
+    },
+    {
+        "question": "Qui est Marie Curie ?",
+        "answer": "Marie Curie est une physicienne...",
+        "difficulty": "easy",
+        "type": "entity",
+        "relevance_score": 0.87,
+    }
+]
 ```
-P(classe|features) = P(features|classe) × P(classe) / P(features)
+
+## 🛠️ Installation
+
+### Dépendances requises
+
+```bash
+pip install scikit-learn spacy PyMuPDF pytesseract Pillow langdetect
 ```
 
-Utilisé pour scorer la pertinence des flashcards.
+### Modèles spaCy
 
-### Named Entity Recognition (spaCy)
+```bash
+# Français
+python -m spacy download fr_core_news_sm
 
-Identifie et classifie les entités nommées (personnes, lieux, dates, etc.) via des modèles de deep learning pré-entraînés.
+# Anglais
+python -m spacy download en_core_web_sm
+```
 
-## 🔐 Sécurité
+### Tesseract (pour OCR)
 
-- Authentification requise pour toutes les vues
-- Validation des types de fichiers
-- Limite de taille configurable
-- Isolation des fichiers par utilisateur
-- **Pas de transfert de données vers des APIs tierces**
+- **Ubuntu/Debian** : `sudo apt-get install tesseract-ocr tesseract-ocr-fra`
+- **macOS** : `brew install tesseract tesseract-lang`
+- **Windows** : [Télécharger](https://github.com/UB-Mannheim/tesseract/wiki)
 
-## 📝 Améliorations futures
+## 🧩 Intégration dans d'autres apps
 
-- [ ] Support NLTK en fallback si spaCy non installé
-- [ ] Fine-tuning des patterns de définition par domaine
-- [ ] Support de plus de formats (DOCX, PPTX, EPUB)
-- [ ] Clustering des flashcards par thème
-- [ ] Export Anki/Quizlet
-- [ ] Mode asynchrone (Celery) pour gros documents
-- [ ] Support multilingue avancé
+### Exemple : App Revision
 
-## 🆚 Comparaison Open-Source vs API IA
+```python
+# apps/revision/views/document_import.py
+from apps.ai_documents.services import FlashcardGeneratorService
+from apps.ai_documents.utils import extract_text_from_file
+from apps.revision.models import Flashcard, FlashcardDeck
 
-| Critère | Open-Source (ce projet) | API OpenAI |
-|---------|------------------------|------------|
-| **Coût** | Gratuit | ~0.002$/1k tokens |
-| **Confidentialité** | 100% local | Données envoyées |
-| **Contrôle** | Total | Limité |
-| **Personnalisation** | Complète | Limitée |
-| **Dépendance** | Aucune | Internet + quota |
-| **Qualité** | Bonne (patterns) | Excellente |
-| **Rapidité** | Rapide (local) | Variable (API) |
+def import_from_document(deck_id, uploaded_file):
+    # 1. Extraire texte
+    text, method = extract_text_from_file(
+        uploaded_file.path,
+        uploaded_file.content_type
+    )
+
+    # 2. Générer flashcards
+    generator = FlashcardGeneratorService(language='french')
+    cards_data = generator.generate_flashcards(text, max_cards=10)
+
+    # 3. Sauvegarder dans votre modèle
+    deck = FlashcardDeck.objects.get(id=deck_id)
+    for card_data in cards_data:
+        Flashcard.objects.create(
+            deck=deck,
+            front_text=card_data['question'],
+            back_text=card_data['answer']
+        )
+```
+
+### Exemple : App Quiz
+
+```python
+# apps/quiz/services.py
+from apps.ai_documents.services import FlashcardGeneratorService
+
+def generate_quiz_from_text(text: str):
+    generator = FlashcardGeneratorService(language='french')
+    cards = generator.generate_flashcards(text, max_cards=20)
+
+    # Transformer en questions QCM
+    quiz_questions = []
+    for card in cards:
+        quiz_questions.append({
+            'question': card['question'],
+            'correct_answer': card['answer'],
+            'difficulty': card['difficulty']
+        })
+    return quiz_questions
+```
+
+## ⚙️ Configuration
+
+### Personnaliser le générateur
+
+```python
+generator = FlashcardGeneratorService(language='french')
+
+# Changer la langue
+generator.language = 'english'
+generator._load_nlp_models()  # Recharger le modèle
+
+# Générer avec options
+flashcards = generator.generate_flashcards(
+    text=long_text,
+    max_cards=20,              # Nombre max
+    difficulty_levels=True,    # Inclure difficultés
+    language='fr'              # Override langue
+)
+```
+
+### Paramètres de classification
+
+Dans `classify_flashcards_with_bayes()`, les scores sont calculés selon :
+
+```python
+# Bonus par type
+type_bonus = {
+    'definition': 0.3,    # Haute priorité
+    'entity': 0.2,
+    'concept': 0.15,
+    'reasoning': 0.1
+}
+
+# Longueur optimale de réponse : 10-50 mots
+# Présence de mots interrogatifs : +0.3
+# Question avec '?' : +0.1
+```
+
+## 🎓 Cas d'usage
+
+### ✅ Recommandé pour
+
+- Import de cours (PDF)
+- Extraction depuis articles
+- Génération depuis notes
+- OCR de polycopiés scannés
+- Création de quiz automatiques
+
+### ❌ Moins adapté pour
+
+- Listes de vocabulaire (préférer Excel/CSV)
+- Tableaux structurés
+- Formules mathématiques complexes
+- Documents très courts (< 200 mots)
+
+## 📝 Limitations
+
+- **Texte max** : 50 000 caractères par défaut
+- **Langues** : Français, Anglais (extensible)
+- **Qualité OCR** : Dépend de la qualité de l'image
+- **Complexité** : Meilleur sur texte structuré (cours, définitions)
+
+## 🔄 Évolution
+
+Cette bibliothèque est conçue pour :
+- ✅ Être réutilisée dans plusieurs apps
+- ✅ Fonctionner sans Django (utils purs Python)
+- ✅ Être testée unitairement
+- ✅ Évoluer indépendamment
 
 ## 📄 Licence
 
@@ -280,4 +295,4 @@ Propriétaire - Linguify 2025
 
 ---
 
-**Générez des flashcards intelligentes sans dépendre d'APIs externes !** 🎉
+**Bibliothèque NLP pure et réutilisable** 🧠

@@ -6,6 +6,7 @@ from .revision_schedule import RevisionSession
 from .revision_vocabulary import VocabularyWord, VocabularyList
 from .settings_models import RevisionSettings, RevisionSessionConfig
 from .card_performance import CardPerformance, CardMastery, StudyMode, DifficultyLevel
+from .document_upload import DocumentUpload
 
 __all__ = [
     'Revision',
@@ -21,4 +22,5 @@ __all__ = [
     'CardMastery',
     'StudyMode',
     'DifficultyLevel',
+    'DocumentUpload',
 ]

@@ -6,7 +6,7 @@ from django.utils import timezone
 class DocumentUpload(models.Model):
     """
     Modèle pour stocker les documents uploadés (PDF, images, texte)
-    avant génération des flashcards
+    avant génération des flashcards DANS L'APP REVISION
     """
     DOCUMENT_TYPE_CHOICES = [
         ('pdf', 'PDF'),
@@ -25,14 +25,18 @@ class DocumentUpload(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='document_uploads'
+        related_name='revision_document_uploads'
     )
-    # Supprimé : deck devrait être dans l'app qui utilise ce service
-    # L'app ai_documents doit rester générique
+    deck = models.ForeignKey(
+        'FlashcardDeck',
+        on_delete=models.CASCADE,
+        related_name='uploaded_documents',
+        help_text="Deck cible pour les flashcards générées"
+    )
 
     # Informations sur le fichier
     file = models.FileField(
-        upload_to='ai_documents/uploads/%Y/%m/%d/',
+        upload_to='revision/documents/%Y/%m/%d/',
         help_text="Fichier uploadé (PDF, image, texte)"
     )
     original_filename = models.CharField(max_length=255)
@@ -83,15 +87,15 @@ class DocumentUpload(models.Model):
         help_text="Message d'erreur en cas d'échec"
     )
 
-    # Paramètres de génération IA
+    # Paramètres de génération
     generation_params = models.JSONField(
         default=dict,
         blank=True,
-        help_text="Paramètres utilisés pour la génération (modèle IA, température, etc.)"
+        help_text="Paramètres utilisés pour la génération"
     )
 
     class Meta:
-        app_label = 'ai_documents'
+        app_label = 'revision'
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['user', 'status']),
@@ -101,7 +105,7 @@ class DocumentUpload(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.original_filename} ({self.get_status_display()})"
+        return f"{self.original_filename} → {self.deck.name} ({self.get_status_display()})"
 
     def mark_as_processing(self):
         """Marque le document comme en cours de traitement"""

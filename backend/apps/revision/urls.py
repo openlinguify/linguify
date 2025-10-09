@@ -11,6 +11,7 @@ from .views.flashcard_views import TagsAPIView, WordStatsAPIView
 from .views.translation_views import TranslationAPIView, TranslationDetectAPIView
 from .views.revision_settings_views import *
 from .views.stats_api_views import *
+from .views.document_import_views import DocumentImportAPIView
 # Import web views
 from .views.web_views import *
 # Import adaptive learning views
@@ -113,6 +114,7 @@ urlpatterns = [
     # Main API routes
     path('api/', include(router.urls)),
     path('api/decks/<int:deck_id>/import/', FlashcardImportView.as_view(), name='flashcard-import'),
+    path('api/decks/<int:deck_id>/import-document/', DocumentImportAPIView.as_view(), name='document-import'),
     path('api/tags/', TagsAPIView.as_view(), name='tags-api'),
     path('api/word-stats/', WordStatsAPIView.as_view(), name='word-stats-api'),
     path('api/user-settings/', get_user_revision_settings, name='user-settings'),
