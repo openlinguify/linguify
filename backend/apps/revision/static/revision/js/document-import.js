@@ -11,11 +11,19 @@
     // Initialize when DOM is ready
     function initDocumentImport() {
         console.log('📄 Document Import Module Initialized');
+        console.log('📄 Current import type on init:', currentImportType);
 
         // Setup event listeners
         setupImportTypeSwitch();
         setupDocumentFileInput();
         setupDocumentDropZone();
+
+        // Check if document radio is already selected on init
+        const documentRadio = document.getElementById('importTypeDocument');
+        if (documentRadio && documentRadio.checked) {
+            console.log('📄 Document radio is already checked, switching to document mode');
+            switchToDocumentMode();
+        }
     }
 
     // Switch between Excel and Document import
@@ -23,8 +31,11 @@
         const excelRadio = document.getElementById('importTypeExcel');
         const documentRadio = document.getElementById('importTypeDocument');
 
+        console.log('📄 Setting up import type switch', { excelRadio, documentRadio });
+
         if (excelRadio) {
             excelRadio.addEventListener('change', function() {
+                console.log('📊 Excel radio changed, checked:', this.checked);
                 if (this.checked) {
                     switchToExcelMode();
                 }
@@ -33,6 +44,7 @@
 
         if (documentRadio) {
             documentRadio.addEventListener('change', function() {
+                console.log('📄 Document radio changed, checked:', this.checked);
                 if (this.checked) {
                     switchToDocumentMode();
                 }
@@ -360,6 +372,9 @@
 
     // Process document import (exposed globally)
     window.processDocumentImport = processDocumentImport;
+
+    // Expose init function to be called when modal opens
+    window.initDocumentImport = initDocumentImport;
 
     // Initialize on DOM ready
     if (document.readyState === 'loading') {

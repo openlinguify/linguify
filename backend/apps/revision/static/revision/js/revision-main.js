@@ -661,9 +661,14 @@ function showImportForm() {
     
     // Initialize drag and drop
     initializeDragAndDrop();
-    
+
     // Initialize real-time validation
     initializeRealTimeValidation();
+
+    // Initialize document import module
+    if (typeof window.initDocumentImport === 'function') {
+        window.initDocumentImport();
+    }
 }
 
 function hideImportForm() {
