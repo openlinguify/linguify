@@ -44,8 +44,8 @@ def current_app_context(request):
                 # Fallback: extract app code from namespace
                 app_code = _extract_app_code_from_namespace(namespace)
                 if app_code:
-                    # Special case for saas_web namespace - use Linguify instead
-                    if namespace == 'saas_web':
+                    # Special case for dashboard namespace - use Linguify instead
+                    if namespace == 'dashboard':
                         display_name = 'Linguify'
                     else:
                         display_name = namespace.replace('_', ' ').title()

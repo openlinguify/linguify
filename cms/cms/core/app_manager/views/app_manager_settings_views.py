@@ -72,7 +72,7 @@ class AppManagerSettingsView(View, SettingsContextMixin):
             'total_installed': len(enriched_apps),
         })
         
-        return render(request, 'saas_web/settings/settings.html', context)
+        return render(request, 'dashboard/settings/settings.html', context)
     
     def post(self, request):
         # Traiter les paramètres soumis
