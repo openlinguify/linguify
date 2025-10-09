@@ -1,74 +1,185 @@
-// Gestion de la traduction automatique pour les cartes
+// Translation and card flip management
 
-// État de traduction
+// ==================== i18n Dictionary ====================
+const i18n = {
+    en: {
+        'please_enter_text': 'Please enter text to translate',
+        'text_too_long': 'Text cannot exceed 1000 characters',
+        'same_languages': 'Source and target languages cannot be the same',
+        'translating': 'Translating...',
+        'translate': 'Translate',
+        'translation_success': 'Successfully translated from {from} to {to}',
+        'translation_error': 'Error during translation',
+        'connection_error': 'Connection error during translation',
+        'invalid_card_id': 'Cannot flip card: Invalid ID',
+        'card_elements_not_found': 'Cannot find card elements',
+        'flip_button_not_found': 'Cannot find flip button',
+        'flip_error': 'Error during flip',
+        'card_flipped_temp': 'Card flipped (temporary)',
+        'card_flipped': 'Card flipped!',
+        'network_error': 'Network error',
+        'lang_fr': 'French',
+        'lang_en': 'English',
+        'lang_es': 'Spanish',
+        'lang_nl': 'Dutch'
+    },
+    fr: {
+        'please_enter_text': 'Veuillez d\'abord saisir du texte à traduire',
+        'text_too_long': 'Le texte ne peut pas dépasser 1000 caractères',
+        'same_languages': 'Les langues source et cible ne peuvent pas être identiques',
+        'translating': 'Traduction...',
+        'translate': 'Traduire',
+        'translation_success': 'Traduction réussie de {from} vers {to}',
+        'translation_error': 'Erreur lors de la traduction',
+        'connection_error': 'Erreur de connexion lors de la traduction',
+        'invalid_card_id': 'Impossible d\'inverser la carte: ID invalide',
+        'card_elements_not_found': 'Impossible de trouver les éléments de la carte',
+        'flip_button_not_found': 'Impossible de trouver le bouton d\'inversion',
+        'flip_error': 'Erreur lors de l\'inversion',
+        'card_flipped_temp': 'Carte inversée (temporaire)',
+        'card_flipped': 'Carte inversée !',
+        'network_error': 'Erreur réseau',
+        'lang_fr': 'Français',
+        'lang_en': 'Anglais',
+        'lang_es': 'Espagnol',
+        'lang_nl': 'Néerlandais'
+    },
+    es: {
+        'please_enter_text': 'Por favor, introduzca el texto a traducir',
+        'text_too_long': 'El texto no puede superar los 1000 caracteres',
+        'same_languages': 'Los idiomas de origen y destino no pueden ser iguales',
+        'translating': 'Traduciendo...',
+        'translate': 'Traducir',
+        'translation_success': 'Traducción exitosa de {from} a {to}',
+        'translation_error': 'Error durante la traducción',
+        'connection_error': 'Error de conexión durante la traducción',
+        'invalid_card_id': 'No se puede voltear la tarjeta: ID inválido',
+        'card_elements_not_found': 'No se pueden encontrar los elementos de la tarjeta',
+        'flip_button_not_found': 'No se puede encontrar el botón de volteo',
+        'flip_error': 'Error al voltear',
+        'card_flipped_temp': 'Tarjeta volteada (temporal)',
+        'card_flipped': '¡Tarjeta volteada!',
+        'network_error': 'Error de red',
+        'lang_fr': 'Francés',
+        'lang_en': 'Inglés',
+        'lang_es': 'Español',
+        'lang_nl': 'Holandés'
+    },
+    nl: {
+        'please_enter_text': 'Voer eerst tekst in om te vertalen',
+        'text_too_long': 'Tekst mag niet langer zijn dan 1000 tekens',
+        'same_languages': 'Bron- en doeltaal kunnen niet hetzelfde zijn',
+        'translating': 'Vertalen...',
+        'translate': 'Vertalen',
+        'translation_success': 'Succesvol vertaald van {from} naar {to}',
+        'translation_error': 'Fout bij vertaling',
+        'connection_error': 'Verbindingsfout bij vertaling',
+        'invalid_card_id': 'Kan kaart niet omdraaien: Ongeldig ID',
+        'card_elements_not_found': 'Kan kaartelementen niet vinden',
+        'flip_button_not_found': 'Kan omdraaiknop niet vinden',
+        'flip_error': 'Fout bij omdraaien',
+        'card_flipped_temp': 'Kaart omgedraaid (tijdelijk)',
+        'card_flipped': 'Kaart omgedraaid!',
+        'network_error': 'Netwerkfout',
+        'lang_fr': 'Frans',
+        'lang_en': 'Engels',
+        'lang_es': 'Spaans',
+        'lang_nl': 'Nederlands'
+    }
+};
+
+// Get user language from Django or browser
+function getUserLanguage() {
+    const djangoLang = document.documentElement.lang || document.querySelector('html')?.getAttribute('lang');
+    if (djangoLang && i18n[djangoLang]) {
+        return djangoLang;
+    }
+    const browserLang = navigator.language.split('-')[0];
+    if (i18n[browserLang]) {
+        return browserLang;
+    }
+    return 'en';
+}
+
+// Translation function
+function t(key, replacements = {}) {
+    const lang = getUserLanguage();
+    let text = i18n[lang]?.[key] || i18n['en'][key] || key;
+    Object.keys(replacements).forEach(placeholder => {
+        text = text.replace(`{${placeholder}}`, replacements[placeholder]);
+    });
+    return text;
+}
+
+// ==================== Translation State ====================
 let translationState = {
     translatingFront: false,
     translatingBack: false
 };
 
-// Fonction pour traduire le texte
+// ==================== Text Translation Function ====================
 async function translateText(direction) {
-    console.log('translateText appelée avec direction:', direction);
-    
+    console.log('translateText called with direction:', direction);
+
     const sourceField = direction === 'front' ? 'newCardFront' : 'newCardBack';
     const targetField = direction === 'front' ? 'newCardBack' : 'newCardFront';
     const sourceTextarea = document.getElementById(sourceField);
     const targetTextarea = document.getElementById(targetField);
-    
-    // Vérifications de base
+
+    // Basic validation
     if (!sourceTextarea || !targetTextarea) {
-        console.error('Champs de texte non trouvés');
+        console.error('Text fields not found');
         return;
     }
-    
+
     const sourceText = sourceTextarea.value.trim();
     if (!sourceText) {
-        showNotification('Veuillez d\'abord saisir du texte à traduire', 'warning');
+        showNotification(t('please_enter_text'), 'warning');
         return;
     }
-    
+
     if (sourceText.length > 1000) {
-        showNotification('Le texte ne peut pas dépasser 1000 caractères', 'error');
+        showNotification(t('text_too_long'), 'error');
         return;
     }
-    
-    // Déterminer les langues source et cible
-    const sourceLangSelect = direction === 'front' ? 
-        document.getElementById('newCardFrontLang') : 
+
+    // Determine source and target languages
+    const sourceLangSelect = direction === 'front' ?
+        document.getElementById('newCardFrontLang') :
         document.getElementById('newCardBackLang');
-    const targetLangSelect = direction === 'front' ? 
-        document.getElementById('newCardBackLang') : 
+    const targetLangSelect = direction === 'front' ?
+        document.getElementById('newCardBackLang') :
         document.getElementById('newCardFrontLang');
-    
+
     let sourceLang = sourceLangSelect ? sourceLangSelect.value : '';
     let targetLang = targetLangSelect ? targetLangSelect.value : '';
-    
-    // Utiliser les langues par défaut du deck si pas de langue spécifique
+
+    // Use deck default languages if no specific language
     if (!sourceLang) {
         sourceLang = direction === 'front' ? getDeckDefaultFrontLang() : getDeckDefaultBackLang();
     }
     if (!targetLang) {
         targetLang = direction === 'front' ? getDeckDefaultBackLang() : getDeckDefaultFrontLang();
     }
-    
-    // Vérifier si les langues sont différentes
+
+    // Check if languages are different
     if (sourceLang === targetLang) {
-        showNotification('Les langues source et cible ne peuvent pas être identiques', 'warning');
+        showNotification(t('same_languages'), 'warning');
         return;
     }
-    
-    // Mettre à jour l'état de chargement
+
+    // Update loading state
     const propertyName = direction === 'front' ? 'translatingFront' : 'translatingBack';
     translationState[propertyName] = true;
-    
-    // Mettre à jour le bouton
+
+    // Update button
     const btnId = direction === 'front' ? 'translateFrontBtn' : 'translateBackBtn';
     const btn = document.getElementById(btnId);
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i><span>Traduction...</span>';
+        btn.innerHTML = `<i class="spinner-border spinner-border-sm me-1"></i><span>${t('translating')}</span>`;
     }
-    
+
     try {
         // Debug information
         const csrfToken = getCSRFToken();
@@ -79,8 +190,8 @@ async function translateText(direction) {
             source_language: sourceLang,
             target_language: targetLang
         });
-        
-        // Effectuer la requête de traduction
+
+        // Make translation request
         const response = await fetch('/revision/translate/', {
             method: 'POST',
             headers: {
@@ -94,13 +205,13 @@ async function translateText(direction) {
                 target_language: targetLang
             })
         });
-        
+
         console.log('Response status:', response.status);
         console.log('Response headers:', response.headers);
-        
+
         const responseText = await response.text();
         console.log('Response text:', responseText);
-        
+
         let data;
         try {
             data = JSON.parse(responseText);
@@ -109,50 +220,55 @@ async function translateText(direction) {
             console.error('Response was not JSON:', responseText);
             throw new Error('Invalid JSON response from server');
         }
-        
+
         if (response.ok && data.success) {
-            // Succès - mettre à jour le champ cible
+            // Success - update target field
             targetTextarea.value = data.data.translated_text;
-            
-            // Afficher une notification de succès
+
+            // Show success notification
             showNotification(
-                `Traduction réussie de ${getLanguageName(data.data.source_language)} vers ${getLanguageName(data.data.target_language)}`, 
+                t('translation_success', {
+                    from: getLanguageName(data.data.source_language),
+                    to: getLanguageName(data.data.target_language)
+                }),
                 'success'
             );
-            
-            // Focus sur le champ traduit
+
+            // Focus on translated field
             targetTextarea.focus();
-            
+
         } else {
-            // Erreur de traduction
-            const errorMessage = data.error || 'Erreur lors de la traduction';
+            // Translation error
+            const errorMessage = data.error || t('translation_error');
             showNotification(errorMessage, 'error');
-            console.error('Erreur de traduction:', data);
+            console.error('Translation error:', data);
         }
-        
+
     } catch (error) {
-        console.error('Erreur de requête:', error);
-        showNotification('Erreur de connexion lors de la traduction', 'error');
+        console.error('Request error:', error);
+        showNotification(t('connection_error'), 'error');
     } finally {
-        // Réinitialiser l'état de chargement
+        // Reset loading state
         translationState[propertyName] = false;
-        
-        // Remettre le bouton à l'état normal
+
+        // Reset button to normal state
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-translate me-1"></i><span>Traduire</span>';
+            btn.innerHTML = `<i class="bi bi-translate me-1"></i><span>${t('translate')}</span>`;
         }
     }
 }
 
-// Fonction pour obtenir le token CSRF
+// ==================== Helper Functions ====================
+
+// Get CSRF token
 function getCSRFToken() {
     const token = document.querySelector('[name=csrfmiddlewaretoken]');
     if (token) {
         return token.value;
     }
-    
-    // Fallback - chercher dans les cookies
+
+    // Fallback - search in cookies
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
         const [name, value] = cookie.trim().split('=');
@@ -160,74 +276,51 @@ function getCSRFToken() {
             return decodeURIComponent(value);
         }
     }
-    
+
     return '';
 }
 
-// Fonction pour obtenir la langue par défaut du recto du deck
+// Get deck default front language
 function getDeckDefaultFrontLang() {
-    // Cette fonction devrait récupérer la langue depuis le contexte du deck
-    // Pour l'instant, on utilise une valeur par défaut
     return window.deckFrontLanguage || 'fr';
 }
 
-// Fonction pour obtenir la langue par défaut du verso du deck
+// Get deck default back language
 function getDeckDefaultBackLang() {
-    // Cette fonction devrait récupérer la langue depuis le contexte du deck
-    // Pour l'instant, on utilise une valeur par défaut
     return window.deckBackLanguage || 'en';
 }
 
-// Fonction pour obtenir le nom de la langue
+// Get language name translated
 function getLanguageName(langCode) {
-    const languages = {
-        'fr': 'Français',
-        'en': 'Anglais',
-        'es': 'Espagnol',
-        'it': 'Italien',
-        'de': 'Allemand',
-        'pt': 'Portugais',
-        'nl': 'Néerlandais',
-        'ru': 'Russe',
-        'ja': 'Japonais',
-        'ko': 'Coréen',
-        'zh': 'Chinois',
-        'ar': 'Arabe'
-    };
-    return languages[langCode] || langCode;
+    return t(`lang_${langCode}`) || langCode;
 }
 
-// Fonction pour afficher les notifications
+// Show notification
 function showNotification(message, type = 'info') {
-    // Chercher un conteneur de notifications existant
     let notificationContainer = document.getElementById('notification-container');
-    
+
     if (!notificationContainer) {
-        // Créer le conteneur s'il n'existe pas
         notificationContainer = document.createElement('div');
         notificationContainer.id = 'notification-container';
         notificationContainer.className = 'position-fixed top-0 end-0 p-3';
         notificationContainer.style.zIndex = '9999';
         document.body.appendChild(notificationContainer);
     }
-    
-    // Créer la notification
+
     const notification = document.createElement('div');
     notification.className = `alert alert-${getBootstrapAlertClass(type)} alert-dismissible fade show`;
     notification.setAttribute('role', 'alert');
     notification.style.minWidth = '300px';
-    
+
     const icon = getNotificationIcon(type);
     notification.innerHTML = `
         <i class="bi ${icon} me-2"></i>
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-    
-    // Ajouter la notification au conteneur
+
     notificationContainer.appendChild(notification);
-    
-    // Supprimer automatiquement après 5 secondes
+
     setTimeout(() => {
         if (notification.parentNode) {
             notification.remove();
@@ -235,7 +328,7 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Fonction pour mapper les types de notification aux classes Bootstrap
+// Map notification types to Bootstrap classes
 function getBootstrapAlertClass(type) {
     const mapping = {
         'success': 'success',
@@ -246,7 +339,7 @@ function getBootstrapAlertClass(type) {
     return mapping[type] || 'info';
 }
 
-// Fonction pour obtenir l'icône de notification
+// Get notification icon
 function getNotificationIcon(type) {
     const mapping = {
         'success': 'bi-check-circle',
@@ -257,66 +350,66 @@ function getNotificationIcon(type) {
     return mapping[type] || 'bi-info-circle';
 }
 
-// Fonction pour inverser front/back d'une carte (swap translation)
-// Cette fonction est appelée lorsque l'utilisateur clique sur le bouton de swap (⇄) dans la liste des cartes
+// ==================== Card Flip Function ====================
+// This function is called when user clicks the swap button (⇄) in the card list
 window.flipCardTranslation = async function(cardId, event) {
-    console.log('Inversion carte:', cardId, 'Event:', event);
+    console.log('Card flip:', cardId, 'Event:', event);
 
-    // Si cardId n'est pas valide, essayer de le trouver depuis l'élément cliqué
+    // If cardId is not valid, try to find it from clicked element
     if (!cardId || cardId === 'undefined' || cardId === 'unknown' || cardId === undefined) {
         if (event && event.target) {
             const button = event.target.closest('button');
             const cardElement = button?.closest('[data-card-id]');
             cardId = cardElement?.dataset?.cardId;
-            console.log('ID récupéré depuis le DOM:', cardId);
+            console.log('ID retrieved from DOM:', cardId);
         }
 
         if (!cardId || cardId === 'undefined' || cardId === 'unknown') {
-            console.error('ID de carte invalide:', cardId);
-            showNotification('Impossible d\'inverser la carte: ID invalide', 'error');
+            console.error('Invalid card ID:', cardId);
+            showNotification(t('invalid_card_id'), 'error');
             return;
         }
     }
-    
-    // Si c'est un ID temporaire, faire uniquement l'inversion visuelle
+
+    // If it's a temporary ID, do only visual flip
     if (cardId.toString().startsWith('temp-')) {
-        console.log('ID temporaire détecté, inversion locale uniquement:', cardId);
+        console.log('Temporary ID detected, local flip only:', cardId);
     }
-    
-    // Trouver la carte dans le DOM
+
+    // Find card in DOM
     const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
     const frontElement = cardElement?.querySelector('.card-front-text');
     const backElement = cardElement?.querySelector('.card-back-text');
-    
+
     if (!cardElement || !frontElement || !backElement) {
-        console.error('Éléments de carte introuvables pour l\'ID:', cardId);
-        showNotification('Impossible de trouver les éléments de la carte', 'error');
+        console.error('Card elements not found for ID:', cardId);
+        showNotification(t('card_elements_not_found'), 'error');
         return;
     }
-    
-    // Ajouter animation de chargement sur le bon bouton (celui avec l'icône arrow-left-right)
+
+    // Add loading animation on the button
     const button = cardElement.querySelector('button[title="Inverser recto/verso"]');
 
     if (!button) {
-        console.error('Bouton d\'inversion introuvable pour la carte:', cardId);
-        showNotification('Impossible de trouver le bouton d\'inversion', 'error');
+        console.error('Flip button not found for card:', cardId);
+        showNotification(t('flip_button_not_found'), 'error');
         return;
     }
 
     const originalContent = button.innerHTML;
     button.disabled = true;
     button.innerHTML = '<i class="spinner-border spinner-border-sm"></i>';
-    
+
     try {
         let apiSuccess = true;
-        
-        // Pour les IDs temporaires, on fait uniquement l'inversion visuelle
+
+        // For temporary IDs, do only visual flip
         if (cardId.toString().startsWith('temp-')) {
-            console.log('Inversion locale pour ID temporaire');
-            // Simuler un délai d'API pour l'UX
+            console.log('Local flip for temporary ID');
+            // Simulate API delay for UX
             await new Promise(resolve => setTimeout(resolve, 200));
         } else {
-            // Pour les vraies cartes, appeler l'API
+            // For real cards, call API
             const response = await fetch(`/api/v1/revision/api/flashcards/${cardId}/flip_card/`, {
                 method: 'POST',
                 headers: {
@@ -325,44 +418,44 @@ window.flipCardTranslation = async function(cardId, event) {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
-            
+
             const data = await response.json();
             apiSuccess = response.ok && data.success;
-            
+
             if (!apiSuccess) {
-                console.error('Erreur API flip:', data);
-                showNotification(data.error || 'Erreur lors de l\'inversion', 'error');
+                console.error('API flip error:', data);
+                showNotification(data.error || t('flip_error'), 'error');
                 return;
             }
         }
-        
+
         if (apiSuccess) {
-            // Animation d'inversion - swap le contenu
+            // Flip animation - swap content
             const frontText = frontElement.textContent;
             const backText = backElement.textContent;
-            
-            // Animation de fade out
+
+            // Fade out animation
             cardElement.style.transition = 'opacity 0.2s ease';
             cardElement.style.opacity = '0.5';
-            
+
             setTimeout(() => {
-                // Échanger le contenu
+                // Swap content
                 frontElement.textContent = backText;
                 backElement.textContent = frontText;
-                
-                // Animation de fade in
+
+                // Fade in animation
                 cardElement.style.opacity = '1';
-                
-                const message = cardId.toString().startsWith('temp-') ? 
-                    'Carte inversée (temporaire)' : 'Carte inversée !';
+
+                const message = cardId.toString().startsWith('temp-') ?
+                    t('card_flipped_temp') : t('card_flipped');
                 showNotification(message, 'success');
             }, 200);
         }
     } catch (error) {
-        showNotification('Erreur réseau', 'error');
+        showNotification(t('network_error'), 'error');
         console.error(error);
     } finally {
-        // Restaurer le bouton
+        // Restore button
         setTimeout(() => {
             button.disabled = false;
             button.innerHTML = originalContent;
@@ -370,16 +463,16 @@ window.flipCardTranslation = async function(cardId, event) {
     }
 };
 
-// Exposer la fonction globalement
+// ==================== Expose Functions Globally ====================
 window.translateText = translateText;
 
-// Initialisation
+// ==================== Initialization ====================
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script de traduction chargé');
-    
-    // Raccourcis clavier pour la traduction
+    console.log('Translation script loaded');
+
+    // Keyboard shortcuts for translation
     document.addEventListener('keydown', function(event) {
-        // Ctrl/Cmd + Shift + T pour traduire depuis le recto vers le verso
+        // Ctrl/Cmd + Shift + T to translate front to back
         if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'T') {
             event.preventDefault();
             const frontTextarea = document.getElementById('newCardFront');
@@ -387,8 +480,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 translateText('front');
             }
         }
-        
-        // Ctrl/Cmd + Shift + R pour traduire depuis le verso vers le recto
+
+        // Ctrl/Cmd + Shift + R to translate back to front
         if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'R') {
             event.preventDefault();
             const backTextarea = document.getElementById('newCardBack');
