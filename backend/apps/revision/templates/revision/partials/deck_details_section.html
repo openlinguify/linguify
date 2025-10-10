@@ -5,18 +5,18 @@
     <!-- Deck Header -->
     <div class="sidebar-header-linguify">
         <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3" style="flex: 1; min-width: 0;">
                 <button id="backToList" class="btn-linguify-secondary btn-sm hidden md:block">
                     <i class="bi bi-arrow-left"></i>
                 </button>
-                <div>
-                    <h4 id="deckName" class="text-xl font-semibold text-linguify-primary mb-1">{% trans "Deck Name" %}</h4>
-                    <small id="deckDescription" class="text-gray-500">{% trans "Deck Description" %}</small>
-                    <div id="deckTagsDisplay" class="flex gap-2 mt-2"></div>
+                <div style="flex: 1; min-width: 0;">
+                    <h4 id="deckName" class="text-xl font-semibold text-linguify-primary mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{% trans "Deck Name" %}</h4>
+                    <small id="deckDescription" class="text-gray-500" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{% trans "Deck Description" %}</small>
+                    <div id="deckTagsDisplay" class="flex gap-2 mt-2" style="flex-wrap: wrap; max-width: 400px; overflow: hidden;"></div>
                 </div>
             </div>
-            
-            <div class="flex items-center gap-3">
+
+            <div class="flex items-center gap-3" style="flex-shrink: 0;">
                 <!-- Progression -->
                 <div class="hidden md:flex items-center gap-3">
                     <span id="deckProgress" class="badge-linguify">0/0</span>
