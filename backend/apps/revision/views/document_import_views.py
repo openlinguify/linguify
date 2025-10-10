@@ -106,6 +106,22 @@ class DocumentImportAPIView(APIView):
                 detected_lang = detect_document_language(clean_text)
                 generator_language = 'french' if detected_lang in ['fr', 'fra'] else 'english'
 
+                # Détecter si le deck a des langues configurées pour traduction automatique
+                deck_front_lang = deck.default_front_language
+                deck_back_lang = deck.default_back_language
+
+                # Si le deck a front et back language différentes ET que le texte n'est pas une liste de paires
+                # => Mode extraction de vocabulaire avec traduction
+                needs_translation = (
+                    deck_front_lang and deck_back_lang and
+                    deck_front_lang != deck_back_lang and
+                    generation_mode in ['auto', 'comprehension']  # Pas pour vocabulary_pairs/structured_list
+                )
+
+                if needs_translation:
+                    # Mode extraction de vocabulaire avec traduction automatique
+                    generation_mode = 'vocabulary_extraction_translated'
+
                 # Générer les flashcards avec NLP open-source
                 generator = FlashcardGeneratorService(language=generator_language)
                 flashcards_data = generator.generate_flashcards(
@@ -113,19 +129,25 @@ class DocumentImportAPIView(APIView):
                     max_cards=max_cards,
                     difficulty_levels=True,
                     language=detected_lang,
-                    mode=generation_mode
+                    mode=generation_mode,
+                    source_language=deck_front_lang or detected_lang,
+                    target_language=deck_back_lang or detected_lang
                 )
 
                 # Créer les flashcards dans le deck
                 created_cards = []
                 for card_data in flashcards_data:
+                    # Utiliser les langues du deck si disponibles, sinon langues détectées
+                    front_lang = deck_front_lang or detected_lang or ''
+                    back_lang = deck_back_lang or detected_lang or ''
+
                     flashcard = Flashcard.objects.create(
                         user=request.user,
                         deck=deck,
                         front_text=card_data['question'],
                         back_text=card_data['answer'],
-                        front_language=detected_lang or '',
-                        back_language=detected_lang or '',
+                        front_language=front_lang,
+                        back_language=back_lang,
                     )
                     created_cards.append({
                         'id': flashcard.id,

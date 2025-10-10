@@ -55,7 +55,9 @@ class FlashcardGeneratorService:
         max_cards: int = 10,
         difficulty_levels: bool = True,
         language: Optional[str] = None,
-        mode: str = 'auto'
+        mode: str = 'auto',
+        source_language: Optional[str] = None,
+        target_language: Optional[str] = None
     ) -> List[Dict[str, str]]:
         """
         Génère des flashcards à partir d'un texte en utilisant des méthodes NLP
@@ -65,7 +67,9 @@ class FlashcardGeneratorService:
             max_cards: Nombre maximum de flashcards à générer
             difficulty_levels: Inclure les niveaux de difficulté
             language: Langue du contenu (utilise self.language si None)
-            mode: Mode de génération ('auto', 'comprehension', 'vocabulary', 'vocabulary_pairs', 'definitions')
+            mode: Mode de génération ('auto', 'comprehension', 'vocabulary', 'vocabulary_pairs', 'definitions', 'vocabulary_extraction_translated')
+            source_language: Langue source pour extraction + traduction (ex: 'en')
+            target_language: Langue cible pour traduction (ex: 'fr')
 
         Returns:
             Liste de dictionnaires avec les flashcards
@@ -89,6 +93,10 @@ class FlashcardGeneratorService:
             return self._generate_structured_list_cards(text, max_cards, difficulty_levels)
         elif mode == 'definitions':
             return self._generate_definition_cards(text, max_cards, difficulty_levels)
+        elif mode == 'vocabulary_extraction_translated':
+            return self._generate_vocabulary_with_translation(
+                text, max_cards, difficulty_levels, source_language, target_language
+            )
         else:  # comprehension (default)
             return self._generate_comprehension_cards(text, max_cards, difficulty_levels)
 
@@ -1399,3 +1407,120 @@ class FlashcardGeneratorService:
 
         # Retourner le meilleur split seulement si le score est significatif
         return best_split if best_score >= 2 else len(words) // 2
+
+    def _generate_vocabulary_with_translation(
+        self,
+        text: str,
+        max_cards: int = 10,
+        difficulty_levels: bool = True,
+        source_language: Optional[str] = None,
+        target_language: Optional[str] = None
+    ) -> List[Dict[str, str]]:
+        """
+        Génère des flashcards en extrayant le vocabulaire d'un texte narratif
+        et en le traduisant automatiquement vers une langue cible.
+
+        Args:
+            text: Texte narratif source
+            max_cards: Nombre maximum de flashcards
+            difficulty_levels: Inclure niveaux de difficulté
+            source_language: Langue source ('en', 'fr', etc.)
+            target_language: Langue cible pour traduction
+
+        Returns:
+            Liste de flashcards avec vocabulaire traduit
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+
+        if not source_language or not target_language:
+            logger.error("Source and target languages required")
+            return []
+
+        if source_language == target_language:
+            return self._generate_comprehension_cards(text, max_cards, difficulty_levels)
+
+        flashcards = []
+        sentences = self._split_into_sentences(text)
+
+        if len(sentences) < 2:
+            return []
+
+        # Stop words
+        stop_words = set([
+            'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+            'of', 'with', 'by', 'from', 'as', 'is', 'are', 'was', 'were', 'be',
+            'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
+            'would', 'should', 'could', 'may', 'might', 'must', 'can', 'this',
+            'that', 'these', 'those', 'it', 'its', 'you', 'your', 'we', 'our',
+            'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'ou'
+        ])
+
+        # Compter fréquence des termes
+        term_freq = Counter()
+        for sentence in sentences:
+            words = sentence.lower().split()
+            words_clean = [w.strip(',.!?;:()[]{}""\'') for w in words]
+
+            for i in range(len(words_clean)):
+                word = words_clean[i]
+                if len(word) > 4 and word not in stop_words and word.isalpha():
+                    term_freq[word] += 1
+
+                # Bigrammes
+                if i < len(words_clean) - 1:
+                    bigram = f"{words_clean[i]} {words_clean[i+1]}"
+                    if (words_clean[i] not in stop_words or words_clean[i+1] not in stop_words):
+                        if len(bigram) > 8:
+                            term_freq[bigram] += 1
+
+                # Trigrammes
+                if i < len(words_clean) - 2:
+                    trigram = f"{words_clean[i]} {words_clean[i+1]} {words_clean[i+2]}"
+                    non_stop = sum(1 for w in words_clean[i:i+3] if w not in stop_words)
+                    if non_stop >= 2 and len(trigram) > 12:
+                        term_freq[trigram] += 1
+
+        # Prendre top termes
+        top_terms = [term for term, freq in term_freq.most_common(int(max_cards * 1.5)) if freq >= 2]
+        top_terms_sorted = sorted(top_terms, key=lambda t: (len(t.split()), term_freq[t]), reverse=True)
+
+        # Traduire
+        try:
+            from apps.ai_documents.services.translation_service import TranslationService
+            translator = TranslationService()
+
+            if not translator.is_available():
+                logger.error("Translation API not available")
+                return self._generate_comprehension_cards(text, max_cards, difficulty_levels)
+
+            for term in top_terms_sorted[:max_cards]:
+                translation = translator.translate(term, source_language, target_language)
+
+                if translation and translation != term:
+                    flashcard = {
+                        'question': term,
+                        'answer': translation,
+                        'type': 'vocabulary_translated',
+                        'relevance_score': min(term_freq[term] * 0.15, 1.0)
+                    }
+
+                    if difficulty_levels:
+                        word_count = len(term.split())
+                        if word_count == 1:
+                            flashcard['difficulty'] = 'easy'
+                        elif word_count == 2:
+                            flashcard['difficulty'] = 'medium'
+                        else:
+                            flashcard['difficulty'] = 'hard'
+
+                    flashcards.append(flashcard)
+
+                if len(flashcards) >= max_cards:
+                    break
+
+        except Exception as e:
+            logger.error(f"Translation error: {str(e)}")
+            return self._generate_comprehension_cards(text, max_cards, difficulty_levels)
+
+        return flashcards
