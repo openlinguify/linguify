@@ -85,6 +85,8 @@ class FlashcardGeneratorService:
             return self._generate_vocabulary_cards(text, max_cards, difficulty_levels)
         elif mode == 'vocabulary_pairs':
             return self._generate_vocabulary_pairs_cards(text, max_cards, difficulty_levels)
+        elif mode == 'structured_list':
+            return self._generate_structured_list_cards(text, max_cards, difficulty_levels)
         elif mode == 'definitions':
             return self._generate_definition_cards(text, max_cards, difficulty_levels)
         else:  # comprehension (default)
@@ -155,6 +157,10 @@ class FlashcardGeneratorService:
             if ratio > 0.6:
                 return 'vocabulary_pairs'
 
+        # Vérifier si c'est une liste structurée (catégories + items)
+        if self._is_structured_list(lines):
+            return 'structured_list'
+
         return None
 
     def _generate_comprehension_cards(
@@ -186,6 +192,10 @@ class FlashcardGeneratorService:
         sentence_cards = self._extract_sentence_cards(sentences)
         flashcards.extend(sentence_cards)
 
+        # 5. Extraire les faits numériques et statistiques
+        numeric_cards = self._extract_numeric_facts(sentences)
+        flashcards.extend(numeric_cards)
+
         # Classifier et scorer les flashcards avec Naive Bayes
         if len(flashcards) > 0:
             flashcards = self.classify_flashcards_with_bayes(flashcards)
@@ -212,35 +222,58 @@ class FlashcardGeneratorService:
     def _extract_definitions(self, text: str, sentences: List[str]) -> List[Dict[str, str]]:
         """
         Extrait les définitions explicites du texte
-        Patterns: "X est ...", "X désigne ...", "On appelle X ...", etc.
+        Supporte français et anglais
         """
         flashcards = []
 
-        # Patterns de définition
-        definition_patterns = [
+        # Patterns de définition (français)
+        french_patterns = [
             r'(.+?)\s+(?:est|sont|désigne|désignent|correspond(?:ent)?)\s+(.+)',
             r'(?:On appelle|On nomme)\s+(.+?)\s+(.+)',
-            r'(.+?)\s*:\s*(.+)',  # Définition avec deux-points
             r'(.+?),\s+c\'est-à-dire\s+(.+)',
         ]
 
+        # Patterns de définition (anglais)
+        english_patterns = [
+            r'(.+?)\s+(?:is|are|refers? to|means?|defines?)\s+(.+)',
+            r'(.+?)\s+(?:can be described as|can be defined as)\s+(.+)',
+            r'(?:We call|We define)\s+(.+?)\s+as\s+(.+)',
+        ]
+
+        all_patterns = french_patterns + english_patterns
+
         for sentence in sentences:
-            for pattern in definition_patterns:
+            # Ignorer les phrases trop courtes ou trop longues
+            if len(sentence.split()) < 5 or len(sentence.split()) > 50:
+                continue
+
+            for pattern in all_patterns:
                 match = re.match(pattern, sentence, re.IGNORECASE)
                 if match:
                     term = match.group(1).strip()
                     definition = match.group(2).strip()
 
                     # Vérifier que c'est une bonne définition
-                    if 5 < len(term.split()) < 10 and len(definition.split()) > 5:
+                    # Assouplir les critères
+                    if (2 <= len(term.split()) <= 12 and
+                        len(definition.split()) >= 3 and
+                        len(definition) < 300):
+
+                        # Créer la question selon la langue
+                        if self.language == 'french':
+                            question = f"Qu'est-ce que {term.lower()} ?"
+                        else:
+                            question = f"What is {term.lower()}?"
+
                         flashcards.append({
-                            'question': f"Qu'est-ce que {term.lower()} ?",
+                            'question': question,
                             'answer': definition,
                             'type': 'definition',
-                            'score': 0.9  # Haute priorité pour les définitions
+                            'score': 0.9
                         })
+                        break  # Ne pas chercher d'autres patterns pour cette phrase
 
-        return flashcards
+        return flashcards[:10]  # Limiter à 10 définitions
 
     def _extract_entity_cards(self, text: str, sentences: List[str]) -> List[Dict[str, str]]:
         """Extrait des flashcards basées sur les entités nommées"""
@@ -287,11 +320,15 @@ class FlashcardGeneratorService:
         return question_templates.get(label)
 
     def _extract_concept_cards(self, text: str, sentences: List[str]) -> List[Dict[str, str]]:
-        """Extrait les concepts importants en utilisant TF-IDF"""
+        """Extrait les concepts importants en utilisant TF-IDF ou fréquence basique"""
         flashcards = []
 
+        # Essayer d'abord avec TF-IDF (scikit-learn)
         try:
             from sklearn.feature_extraction.text import TfidfVectorizer
+
+            if len(sentences) < 3:
+                return self._extract_concepts_basic(text, sentences)
 
             # Calculer TF-IDF pour trouver les termes importants
             vectorizer = TfidfVectorizer(
@@ -300,31 +337,92 @@ class FlashcardGeneratorService:
                 stop_words=self._get_stop_words()
             )
 
-            if len(sentences) < 3:
-                return flashcards
-
             tfidf_matrix = vectorizer.fit_transform(sentences)
             feature_names = vectorizer.get_feature_names_out()
 
             # Extraire les top termes
-            top_terms = []
-            for i in range(min(10, len(feature_names))):
-                top_terms.append(feature_names[i])
+            top_terms = list(feature_names[:min(10, len(feature_names))])
 
             # Créer des flashcards pour ces termes
             for term in top_terms:
                 # Trouver la phrase la plus pertinente pour ce terme
                 best_sentence = self._find_best_sentence_for_term(term, sentences)
-                if best_sentence:
+                if best_sentence and len(best_sentence.split()) >= 5:
+                    if self.language == 'french':
+                        question = f"Que dit le texte à propos de '{term}' ?"
+                    else:
+                        question = f"What does the text say about '{term}'?"
+
                     flashcards.append({
-                        'question': f"Que dit le texte à propos de '{term}' ?",
+                        'question': question,
                         'answer': best_sentence,
                         'type': 'concept',
                         'score': 0.6
                     })
 
         except ImportError:
-            pass
+            # Fallback: utiliser méthode basique sans scikit-learn
+            return self._extract_concepts_basic(text, sentences)
+
+        return flashcards[:5]
+
+    def _extract_concepts_basic(self, text: str, sentences: List[str]) -> List[Dict[str, str]]:
+        """Extrait les concepts importants sans TF-IDF (méthode basique par fréquence)"""
+        flashcards = []
+
+        if len(sentences) < 2:
+            return flashcards
+
+        # Mots à ignorer (stop words basiques)
+        stop_words = set([
+            # Anglais
+            'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+            'of', 'with', 'by', 'from', 'as', 'is', 'are', 'was', 'were', 'be',
+            'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
+            'would', 'should', 'could', 'may', 'might', 'must', 'can', 'this',
+            'that', 'these', 'those', 'it', 'its', 'you', 'your', 'we', 'our',
+            # Français
+            'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'ou',
+            'mais', 'dans', 'sur', 'avec', 'pour', 'par', 'est', 'sont', 'été',
+            'être', 'avoir', 'a', 'ont', 'ce', 'cette', 'ces', 'il', 'elle',
+            'nous', 'vous', 'leur', 'leurs'
+        ])
+
+        # Compter la fréquence des mots (2-3 mots consécutifs)
+        word_freq = Counter()
+
+        for sentence in sentences:
+            words = sentence.lower().split()
+            # Bigrammes et trigrammes
+            for i in range(len(words)):
+                # Mots individuels
+                if len(words[i]) > 4 and words[i] not in stop_words:
+                    word_freq[words[i]] += 1
+                # Bigrammes
+                if i < len(words) - 1:
+                    bigram = f"{words[i]} {words[i+1]}"
+                    if words[i] not in stop_words or words[i+1] not in stop_words:
+                        if len(bigram) > 8:
+                            word_freq[bigram] += 1
+
+        # Prendre les 8 termes les plus fréquents
+        top_terms = [term for term, freq in word_freq.most_common(8) if freq >= 2]
+
+        # Créer des flashcards
+        for term in top_terms:
+            best_sentence = self._find_best_sentence_for_term(term, sentences)
+            if best_sentence and len(best_sentence.split()) >= 5:
+                if self.language == 'french':
+                    question = f"Que dit le texte à propos de '{term}' ?"
+                else:
+                    question = f"What does the text say about '{term}'?"
+
+                flashcards.append({
+                    'question': question,
+                    'answer': best_sentence,
+                    'type': 'concept',
+                    'score': 0.6
+                })
 
         return flashcards[:5]
 
@@ -332,9 +430,20 @@ class FlashcardGeneratorService:
         """Génère des flashcards de type question/réponse à partir de phrases importantes"""
         flashcards = []
 
+        # Mots-clés de causalité/raisonnement
+        french_reasoning = ['car', 'parce que', 'donc', 'ainsi', 'permet', 'grâce à', 'à cause de']
+        english_reasoning = ['because', 'since', 'therefore', 'thus', 'so', 'as a result', 'due to', 'thanks to']
+
+        all_reasoning_words = french_reasoning + english_reasoning
+
         for sentence in sentences:
-            # Phrases avec des informations factuelles
-            if any(word in sentence.lower() for word in ['car', 'parce que', 'donc', 'ainsi', 'permet']):
+            # Ignorer phrases trop courtes ou trop longues
+            word_count = len(sentence.split())
+            if word_count < 8 or word_count > 40:
+                continue
+
+            # Phrases avec des informations factuelles/raisonnement
+            if any(word in sentence.lower() for word in all_reasoning_words):
                 # Générer une question "Pourquoi"
                 question = self._convert_to_why_question(sentence)
                 if question:
@@ -347,16 +456,107 @@ class FlashcardGeneratorService:
 
         return flashcards[:3]
 
+    def _extract_numeric_facts(self, sentences: List[str]) -> List[Dict[str, str]]:
+        """Extrait les faits contenant des chiffres, dates, pourcentages, etc."""
+        flashcards = []
+
+        # Patterns pour détecter les informations numériques
+        numeric_patterns = [
+            r'\$\d+',  # Montants en dollars
+            r'€\d+',   # Montants en euros
+            r'\d+\s*%',  # Pourcentages
+            r'\d{4}',   # Années
+            r'\d+\s*(?:years?|ans?|mois|months?|days?|jours?|hours?|heures?)',  # Durées
+            r'\d+\s*(?:to|à|-)\s*\d+',  # Plages (ex: 8 to 65)
+        ]
+
+        for sentence in sentences:
+            # Vérifier si la phrase contient des chiffres
+            if not re.search(r'\d', sentence):
+                continue
+
+            # Vérifier la longueur
+            word_count = len(sentence.split())
+            if word_count < 5 or word_count > 35:
+                continue
+
+            # Vérifier si elle contient un pattern numérique pertinent
+            has_numeric_info = False
+            for pattern in numeric_patterns:
+                if re.search(pattern, sentence):
+                    has_numeric_info = True
+                    break
+
+            if has_numeric_info:
+                # Extraire le fait numérique principal
+                numeric_match = re.search(r'(\$?\d+[\d,.-]*\s*(?:%|dollars?|euros?)?)', sentence)
+                if numeric_match:
+                    number = numeric_match.group(1)
+
+                    # Créer une question selon la langue
+                    if self.language == 'french':
+                        # Essayer de détecter le sujet
+                        if 'salaire' in sentence.lower() or 'pay' in sentence.lower():
+                            question = "Quel est le salaire proposé ?"
+                        elif 'prix' in sentence.lower() or 'price' in sentence.lower() or 'cost' in sentence.lower():
+                            question = "Quel est le prix ?"
+                        else:
+                            # Question générique
+                            first_words = ' '.join(sentence.split()[:6])
+                            question = f"Quelle est l'information numérique concernant '{first_words}...' ?"
+                    else:
+                        # Anglais
+                        if 'salary' in sentence.lower() or 'pay' in sentence.lower() or 'wage' in sentence.lower():
+                            question = "What is the salary range?"
+                        elif 'price' in sentence.lower() or 'cost' in sentence.lower():
+                            question = "What is the price?"
+                        elif 'rate' in sentence.lower() or 'hour' in sentence.lower():
+                            question = "What is the hourly rate?"
+                        else:
+                            # Question générique
+                            first_words = ' '.join(sentence.split()[:6])
+                            question = f"What is the numeric information about '{first_words}...'?"
+
+                    flashcards.append({
+                        'question': question,
+                        'answer': sentence,
+                        'type': 'numeric_fact',
+                        'score': 0.7
+                    })
+
+                    # Limiter à 3 faits numériques
+                    if len(flashcards) >= 3:
+                        break
+
+        return flashcards
+
     def _convert_to_why_question(self, sentence: str) -> Optional[str]:
-        """Convertit une phrase en question 'Pourquoi'"""
-        # Extraire le sujet principal
+        """Convertit une phrase en question 'Pourquoi' ou 'Why'"""
+        # Essayer d'extraire le sujet principal avec spaCy
         if self.nlp:
             doc = self.nlp(sentence)
             for token in doc:
                 if token.dep_ == 'nsubj':
-                    return f"Pourquoi {token.text.lower()} ..."
+                    if self.language == 'french':
+                        return f"Pourquoi {token.text.lower()} ..."
+                    else:
+                        return f"Why {token.text.lower()} ..."
 
-        return "Pourquoi ?"
+        # Fallback: créer une question générique basée sur les premiers mots
+        words = sentence.split()
+        if len(words) >= 3:
+            # Prendre les 3-5 premiers mots pour le contexte
+            context = ' '.join(words[:min(5, len(words))]).lower()
+            if self.language == 'french':
+                return f"Pourquoi {context}... ?"
+            else:
+                return f"Why {context}... ?"
+
+        # Dernière option: question très générique
+        if self.language == 'french':
+            return "Pourquoi ?"
+        else:
+            return "Why?"
 
     def _find_best_sentence_for_term(self, term: str, sentences: List[str]) -> Optional[str]:
         """Trouve la phrase la plus informative contenant un terme"""
@@ -415,6 +615,7 @@ class FlashcardGeneratorService:
                 # Bonus selon le type
                 type_bonus = {
                     'definition': 0.3,
+                    'numeric_fact': 0.25,
                     'entity': 0.2,
                     'concept': 0.15,
                     'reasoning': 0.1
@@ -506,6 +707,7 @@ class FlashcardGeneratorService:
             # Type de carte
             type_difficulty = {
                 'definition': 0,      # Facile
+                'numeric_fact': 0,    # Facile
                 'concept': 1,         # Moyen
                 'entity': 0,          # Facile
                 'reasoning': 2        # Difficile
@@ -656,6 +858,182 @@ class FlashcardGeneratorService:
         if len(flashcards) < max_cards // 2:
             concept_cards = self._extract_concept_cards(text, sentences)
             flashcards.extend(concept_cards[:(max_cards - len(flashcards))])
+
+        return flashcards[:max_cards]
+
+    def _is_structured_list(self, lines: List[str]) -> bool:
+        """
+        Détecte si le texte est une liste structurée avec catégories et items
+        Ex: "Giving opinions - I am sure - I am convinced..."
+        """
+        count_with_dashes = 0
+        count_with_bullets = 0
+        total_lines = 0
+
+        ignore_patterns = [r'^---\s*Page', r'^Te leren', r'^Gemaakt op']
+
+        for line in lines:
+            line = line.strip()
+            if not line or any(re.match(p, line, re.IGNORECASE) for p in ignore_patterns):
+                continue
+
+            total_lines += 1
+
+            # Compter les lignes avec tirets multiples (listes)
+            if line.count('-') >= 3 or line.count('–') >= 3:
+                count_with_dashes += 1
+
+            # Compter les lignes avec puces
+            if '•' in line or '♦' in line:
+                count_with_bullets += 1
+
+        # Si plus de 40% des lignes ont des tirets ou puces, c'est une liste structurée
+        if total_lines >= 3:
+            ratio = (count_with_dashes + count_with_bullets) / total_lines
+            return ratio > 0.4
+
+        return False
+
+    def _generate_structured_list_cards(
+        self,
+        text: str,
+        max_cards: int = 10,
+        difficulty_levels: bool = True
+    ) -> List[Dict[str, str]]:
+        """
+        Génère des flashcards à partir de listes structurées (catégories + items)
+        """
+        flashcards = []
+        lines = text.split('\n')
+
+        ignore_patterns = [r'^---\s*Page', r'^Te leren', r'^Gemaakt op', r'^©']
+
+        for line in lines:
+            line = line.strip()
+            if not line or any(re.match(p, line, re.IGNORECASE) for p in ignore_patterns):
+                continue
+
+            # Format 1: Catégories avec tirets (Strong - I am sure - I am convinced...)
+            if line.count('-') >= 3:
+                parts = [p.strip() for p in line.split('-') if p.strip() and len(p.strip()) > 2]
+                if len(parts) >= 2:
+                    # Détecter si la première partie contient plusieurs catégories (ex: "Giving opinions Strong Neutral Tentative")
+                    first_part = parts[0]
+                    category_words = first_part.split()
+
+                    # Si plus de 3 mots capitalisés, probablement plusieurs catégories + sous-catégories
+                    if len(category_words) >= 3:
+                        # Prendre les 2-3 premiers mots comme catégorie principale
+                        main_category = ' '.join(category_words[:2])
+                        sub_categories = category_words[2:] if len(category_words) > 2 else []
+                        category = main_category
+                    else:
+                        category = first_part
+                        sub_categories = []
+
+                    items = parts[1:]
+
+                    # Créer une flashcard par catégorie
+                    if len(items) >= 2:
+                        if self.language == 'french':
+                            question = f"Quelles sont les expressions pour '{category}' ?"
+                        else:
+                            question = f"What are the expressions for '{category}'?"
+
+                        # Inclure les sous-catégories dans la réponse si elles existent
+                        if sub_categories:
+                            answer_parts = [f"Sub-categories: {', '.join(sub_categories)}", ""]
+                            answer_parts.extend([f"- {item}" for item in items])
+                            answer = '\n'.join(answer_parts)
+                        else:
+                            # Inclure toutes les expressions (pas de limite arbitraire)
+                            answer = '\n'.join(f"- {item}" for item in items)
+
+                        flashcards.append({
+                            'question': question,
+                            'answer': answer,
+                            'type': 'structured_list',
+                            'relevance_score': 0.8
+                        })
+
+            # Format 2: Catégories avec puces (Adding • Giving an example • Generalising...)
+            elif '•' in line or '♦' in line:
+                # Séparer par les puces
+                separator = '•' if '•' in line else '♦'
+                parts = [p.strip() for p in line.split(separator) if p.strip() and len(p.strip()) > 2]
+
+                if len(parts) >= 2:
+                    category = parts[0]
+                    items = parts[1:]
+
+                    if len(items) >= 2:
+                        if self.language == 'french':
+                            question = f"Quels sont les éléments de '{category}' ?"
+                        else:
+                            question = f"What are the elements of '{category}'?"
+
+                        # Inclure tous les éléments
+                        answer = '\n'.join(f"• {item}" for item in items)
+
+                        flashcards.append({
+                            'question': question,
+                            'answer': answer,
+                            'type': 'structured_list',
+                            'relevance_score': 0.8
+                        })
+
+            # Format 3: Définitions courtes (traffic jam a situation in which...)
+            elif (len(line.split()) >= 6 and len(line.split()) <= 25 and
+                  not line[0].isupper() or (line[0].isupper() and ' ' in line)):
+
+                words = line.split()
+                # Essayer de détecter "terme définition"
+                # Détecter le point de séparation en cherchant les articles/mots de début de définition
+                definition_markers = ['a', 'an', 'the', 'to', 'is', 'are', 'was', 'were',
+                                     'le', 'la', 'les', 'un', 'une', 'des']
+
+                if len(words) >= 6:
+                    # Chercher le point de séparation optimal
+                    found_split = False
+                    for i in range(1, min(5, len(words))):
+                        term = ' '.join(words[:i])
+                        definition = ' '.join(words[i:])
+
+                        # Vérifier si le mot après le terme est un marqueur de définition
+                        if (i < len(words) and
+                            words[i].lower() in definition_markers and
+                            len(definition.split()) >= 5 and
+                            not term.lower() in ['what', 'when', 'where', 'who', 'how', 'why']):
+
+                            if self.language == 'french':
+                                question = f"Qu'est-ce que '{term}' ?"
+                            else:
+                                question = f"What is '{term}'?"
+
+                            flashcards.append({
+                                'question': question,
+                                'answer': definition,
+                                'type': 'structured_list',
+                                'relevance_score': 0.75
+                            })
+                            found_split = True
+                            break
+
+                    # Si aucun split trouvé, ne pas créer de flashcard pour cette ligne
+
+            if len(flashcards) >= max_cards:
+                break
+
+        # Assigner les niveaux de difficulté
+        if difficulty_levels and flashcards:
+            for card in flashcards:
+                item_count = card['answer'].count('\n') + card['answer'].count('•') + card['answer'].count('-')
+                if item_count <= 3:
+                    card['difficulty'] = 'easy'
+                elif item_count <= 6:
+                    card['difficulty'] = 'medium'
+                else:
+                    card['difficulty'] = 'hard'
 
         return flashcards[:max_cards]
 
