@@ -55,7 +55,7 @@ class FlashcardGeneratorService:
         max_cards: int = 10,
         difficulty_levels: bool = True,
         language: Optional[str] = None,
-        mode: str = 'comprehension'
+        mode: str = 'auto'
     ) -> List[Dict[str, str]]:
         """
         Génère des flashcards à partir d'un texte en utilisant des méthodes NLP
@@ -65,7 +65,7 @@ class FlashcardGeneratorService:
             max_cards: Nombre maximum de flashcards à générer
             difficulty_levels: Inclure les niveaux de difficulté
             language: Langue du contenu (utilise self.language si None)
-            mode: Mode de génération ('comprehension', 'vocabulary', 'definitions')
+            mode: Mode de génération ('auto', 'comprehension', 'vocabulary', 'vocabulary_pairs', 'definitions')
 
         Returns:
             Liste de dictionnaires avec les flashcards
@@ -74,13 +74,88 @@ class FlashcardGeneratorService:
         if language:
             self.language = language
 
+        # Détection automatique du mode si 'auto'
+        if mode == 'auto' or mode == 'comprehension':
+            detected_mode = self._detect_content_type(text)
+            if detected_mode:
+                mode = detected_mode
+
         # Router vers la méthode appropriée selon le mode
         if mode == 'vocabulary':
             return self._generate_vocabulary_cards(text, max_cards, difficulty_levels)
+        elif mode == 'vocabulary_pairs':
+            return self._generate_vocabulary_pairs_cards(text, max_cards, difficulty_levels)
         elif mode == 'definitions':
             return self._generate_definition_cards(text, max_cards, difficulty_levels)
         else:  # comprehension (default)
             return self._generate_comprehension_cards(text, max_cards, difficulty_levels)
+
+    def _detect_content_type(self, text: str) -> Optional[str]:
+        """
+        Détecte automatiquement le type de contenu pour choisir le meilleur mode
+
+        Args:
+            text: Texte à analyser
+
+        Returns:
+            'vocabulary_pairs' si liste de vocabulaire détectée, None sinon
+        """
+        lines = [line.strip() for line in text.split('\n') if line.strip()]
+
+        if len(lines) < 3:
+            return None
+
+        # Compter combien de lignes ressemblent à des paires de mots
+        vocabulary_pair_count = 0
+        total_valid_lines = 0
+
+        # Patterns à ignorer
+        ignore_patterns = [
+            r'^---\s*Page',
+            r'^Te leren',
+            r'^Gemaakt op',
+            r'^©',
+            r'^\d+\s*$',
+        ]
+
+        for line in lines:
+            # Ignorer les métadonnées
+            if any(re.match(pattern, line, re.IGNORECASE) for pattern in ignore_patterns):
+                continue
+
+            total_valid_lines += 1
+
+            # Vérifier si la ligne ressemble à une paire de vocabulaire
+            # Critères:
+            # 1. Ligne courte (< 100 caractères)
+            # 2. Contient 2 à 10 mots
+            # 3. Pas de verbe conjugué en début de phrase (pas de phrase narrative)
+            if len(line) < 100:
+                words = line.split()
+                word_count = len(words)
+
+                # Paires typiques: 2-10 mots total
+                if 2 <= word_count <= 10:
+                    # Vérifier qu'il n'y a pas de ponctuation de phrase complète
+                    has_sentence_ending = line.endswith('.') or line.endswith('!') or '?' in line
+
+                    # Vérifier présence de mots dans différentes langues
+                    # (accents français, caractères néerlandais)
+                    has_multilingual = (
+                        bool(re.search(r'[àâäéèêëïîôùûüÿç]', line)) or
+                        bool(re.search(r'\s+[a-z]+\s+', line))  # séparation simple entre mots
+                    )
+
+                    if not has_sentence_ending and (has_multilingual or word_count <= 4):
+                        vocabulary_pair_count += 1
+
+        # Si plus de 60% des lignes ressemblent à des paires de vocabulaire
+        if total_valid_lines > 0:
+            ratio = vocabulary_pair_count / total_valid_lines
+            if ratio > 0.6:
+                return 'vocabulary_pairs'
+
+        return None
 
     def _generate_comprehension_cards(
         self,
@@ -583,3 +658,366 @@ class FlashcardGeneratorService:
             flashcards.extend(concept_cards[:(max_cards - len(flashcards))])
 
         return flashcards[:max_cards]
+
+    def _generate_vocabulary_pairs_cards(
+        self,
+        text: str,
+        max_cards: int = 10,
+        difficulty_levels: bool = True
+    ) -> List[Dict[str, str]]:
+        """
+        Génère des flashcards à partir de listes de vocabulaire bilingues
+
+        Formats supportés:
+        1. Sur la même ligne: "afzetten déposer" ou "afzetten\tdéposer"
+        2. Sur lignes consécutives:
+           Ligne 1: Account number
+           Ligne 2: Numéro de compte
+
+        Args:
+            text: Texte contenant les paires de vocabulaire
+            max_cards: Nombre maximum de flashcards
+            difficulty_levels: Inclure niveaux de difficulté
+
+        Returns:
+            Liste de flashcards avec front=mot source, back=traduction
+        """
+        flashcards = []
+
+        # Nettoyer le texte
+        lines = text.split('\n')
+
+        # D'abord, essayer de détecter si c'est un format "paires sur lignes consécutives"
+        if self._is_consecutive_line_format(lines):
+            return self._extract_consecutive_line_pairs(lines, max_cards, difficulty_levels)
+
+        # Patterns à ignorer (titres, métadonnées, etc.)
+        ignore_patterns = [
+            r'^---\s*Page',  # "--- Page 1 ---"
+            r'^Te leren',     # "Te leren"
+            r'^Gemaakt op',   # "Gemaakt op"
+            r'^\s*$',         # Lignes vides
+            r'^©\s*ALTISSIA', # Copyright
+            r'^\d+\s*$',      # Numéros seuls
+        ]
+
+        # Détecter les paires de mots
+        for line in lines:
+            line = line.strip()
+
+            # Ignorer les lignes vides ou métadonnées
+            if not line or any(re.match(pattern, line, re.IGNORECASE) for pattern in ignore_patterns):
+                continue
+
+            # Essayer différents patterns de séparation
+            word_pair = None
+
+            # Pattern 1: Détection automatique avec espaces multiples ou tabulations
+            # Ex: "afzetten    déposer" ou "afzetten\tdéposer"
+            if '\t' in line:
+                parts = line.split('\t', 1)
+                if len(parts) == 2:
+                    word_pair = (parts[0].strip(), parts[1].strip())
+
+            # Pattern 2: Détection avec tiret ou flèche
+            # Ex: "afzetten - déposer" ou "afzetten → déposer"
+            elif any(sep in line for sep in [' - ', ' – ', ' → ', ' -> ']):
+                for sep in [' - ', ' – ', ' → ', ' -> ']:
+                    if sep in line:
+                        parts = line.split(sep, 1)
+                        if len(parts) == 2:
+                            word_pair = (parts[0].strip(), parts[1].strip())
+                            break
+
+            # Pattern 3: Détection intelligente avec espaces
+            # Recherche un mot/phrase suivi d'un ou plusieurs espaces puis un autre mot/phrase
+            # Ex: "afzetten déposer" ou "een middagdutje doen faire une petite sieste"
+            else:
+                # Détecter s'il y a plusieurs espaces consécutifs (indicateur de séparation)
+                if '  ' in line:
+                    parts = re.split(r'\s{2,}', line, 1)
+                    if len(parts) == 2:
+                        word_pair = (parts[0].strip(), parts[1].strip())
+                else:
+                    # Essayer de détecter un changement de langue
+                    # Stratégie: chercher deux groupes de mots séparés par un espace simple
+                    # où chaque groupe contient au moins un mot
+                    words = line.split()
+                    if len(words) >= 2:
+                        # Essayer de trouver le point de séparation optimal
+                        # Heuristique: chercher où les caractères changent (accents, etc.)
+                        best_split = self._find_language_boundary(words)
+                        if best_split > 0:
+                            source = ' '.join(words[:best_split])
+                            target = ' '.join(words[best_split:])
+                            word_pair = (source, target)
+
+            # Valider et ajouter la paire
+            if word_pair:
+                source, target = word_pair
+
+                # Validation: les deux parties doivent contenir au moins un caractère alphabétique
+                # et ne pas être trop longues
+                if (source and target and
+                    re.search(r'[a-zA-Zàâäéèêëïîôùûüÿçœæ]', source) and
+                    re.search(r'[a-zA-Zàâäéèêëïîôùûüÿçœæ]', target) and
+                    1 <= len(source.split()) <= 10 and
+                    1 <= len(target.split()) <= 10):
+
+                    flashcard = {
+                        'question': source,
+                        'answer': target,
+                        'type': 'vocabulary_pair',
+                        'relevance_score': 1.0
+                    }
+
+                    if difficulty_levels:
+                        # Difficulté basée sur la longueur des expressions
+                        word_count = len(source.split()) + len(target.split())
+                        if word_count <= 3:
+                            flashcard['difficulty'] = 'easy'
+                        elif word_count <= 6:
+                            flashcard['difficulty'] = 'medium'
+                        else:
+                            flashcard['difficulty'] = 'hard'
+
+                    flashcards.append(flashcard)
+
+                    if len(flashcards) >= max_cards:
+                        break
+
+        return flashcards
+
+    def _is_consecutive_line_format(self, lines: List[str]) -> bool:
+        """
+        Détecte si le format est "paires sur lignes consécutives"
+        Ex: Ligne 1 = mot anglais, Ligne 2 = traduction française
+
+        Args:
+            lines: Liste des lignes du texte
+
+        Returns:
+            True si format détecté, False sinon
+        """
+        # Patterns à ignorer
+        ignore_patterns = [
+            r'^---\s*Page',
+            r'^Te leren',
+            r'^Gemaakt op',
+            r'^©',
+            r'^\d+\s*$',
+            r'^[A-Z]$',  # Lettres seules (index alphabétique)
+            r'^[A-Z]-[A-Z]',  # A-B-C-D...
+        ]
+
+        # Compter les paires potentielles
+        valid_pairs = 0
+        total_lines = 0
+        i = 0
+
+        while i < len(lines) - 1:
+            line1 = lines[i].strip()
+            line2 = lines[i + 1].strip()
+
+            # Ignorer les lignes vides ou métadonnées
+            if not line1 or any(re.match(p, line1, re.IGNORECASE) for p in ignore_patterns):
+                i += 1
+                continue
+
+            total_lines += 1
+
+            # Vérifier si line1 et line2 forment une paire potentielle
+            # Critères:
+            # - Les deux lignes ont du contenu
+            # - Pas trop longues (< 150 caractères chacune)
+            # - Ne se terminent pas par un point (pas des phrases complètes)
+            if (line2 and
+                len(line1) < 150 and len(line2) < 150 and
+                not line1.endswith('.') and
+                1 <= len(line1.split()) <= 15 and
+                1 <= len(line2.split()) <= 15):
+
+                # Vérifier changement de langue (accents, etc.)
+                french_chars = set('àâäéèêëïîôùûüÿçœæ')
+                has_french_in_line2 = any(c in french_chars for c in line2)
+
+                if has_french_in_line2 or len(line1.split()) <= 5:
+                    valid_pairs += 1
+
+            i += 2  # Sauter la ligne suivante puisqu'on l'a déjà considérée
+
+        # Si plus de 50% des lignes forment des paires, c'est probablement ce format
+        if total_lines > 5 and valid_pairs / total_lines > 0.5:
+            return True
+
+        return False
+
+    def _extract_consecutive_line_pairs(
+        self,
+        lines: List[str],
+        max_cards: int = 10,
+        difficulty_levels: bool = True
+    ) -> List[Dict[str, str]]:
+        """
+        Extrait les paires de vocabulaire sur lignes consécutives
+
+        Args:
+            lines: Liste des lignes
+            max_cards: Nombre maximum de flashcards
+            difficulty_levels: Inclure niveaux de difficulté
+
+        Returns:
+            Liste de flashcards
+        """
+        flashcards = []
+
+        # Patterns à ignorer
+        ignore_patterns = [
+            r'^---\s*Page',
+            r'^Te leren',
+            r'^Gemaakt op',
+            r'^©',
+            r'^\d+\s*$',
+            r'^[A-Z]$',  # Lettres seules
+            r'^[A-Z]-[A-Z]',  # A-B-C-D...
+            r'^English.*French',  # Titre
+            r'^Glossary',
+        ]
+
+        i = 0
+        while i < len(lines) - 1 and len(flashcards) < max_cards:
+            line1 = lines[i].strip()
+            line2 = lines[i + 1].strip() if i + 1 < len(lines) else ''
+
+            # Ignorer lignes vides ou métadonnées
+            if not line1 or any(re.match(p, line1, re.IGNORECASE) for p in ignore_patterns):
+                i += 1
+                continue
+
+            # Vérifier si c'est une paire valide
+            if (line2 and
+                not any(re.match(p, line2, re.IGNORECASE) for p in ignore_patterns) and
+                len(line1) < 150 and len(line2) < 150 and
+                1 <= len(line1.split()) <= 15 and
+                1 <= len(line2.split()) <= 15):
+
+                # Créer la flashcard
+                flashcard = {
+                    'question': line1,
+                    'answer': line2,
+                    'type': 'vocabulary_pair',
+                    'relevance_score': 1.0
+                }
+
+                if difficulty_levels:
+                    # Difficulté basée sur longueur
+                    word_count = len(line1.split()) + len(line2.split())
+                    if word_count <= 3:
+                        flashcard['difficulty'] = 'easy'
+                    elif word_count <= 8:
+                        flashcard['difficulty'] = 'medium'
+                    else:
+                        flashcard['difficulty'] = 'hard'
+
+                flashcards.append(flashcard)
+                i += 2  # Sauter les deux lignes
+            else:
+                i += 1  # Passer à la ligne suivante
+
+        return flashcards
+
+    def _find_language_boundary(self, words: List[str]) -> int:
+        """
+        Trouve le point de séparation probable entre deux langues dans une liste de mots
+
+        Utilise des heuristiques basées sur:
+        - Changement de caractères (accents français vs néerlandais)
+        - Articles néerlandais (de, het, een)
+        - Longueur des mots
+        - Patterns typiques
+
+        Args:
+            words: Liste de mots
+
+        Returns:
+            Index de séparation (0 si pas de séparation détectée)
+        """
+        if len(words) < 2:
+            return 0
+
+        # Caractères typiques du français
+        french_chars = set('àâäéèêëïîôùûüÿçœæ')
+
+        # Articles et mots néerlandais courants
+        dutch_articles = {'de', 'het', 'een'}
+        dutch_common = {'naar', 'van', 'voor', 'met', 'op', 'in', 'uit', 'aan'}
+        dutch_verbs = {'doen', 'gaan', 'zijn', 'hebben', 'maken', 'komen', 'nemen', 'houden'}
+
+        # Pour chaque position possible, calculer un score
+        best_split = 0
+        best_score = -1
+
+        for i in range(1, len(words)):
+            score = 0
+
+            left_part = ' '.join(words[:i])
+            right_part = ' '.join(words[i:])
+            left_words = words[:i]
+            right_words = words[i:]
+
+            # RÈGLE 1: Vérifier présence d'accents français dans la partie droite
+            if any(c in french_chars for c in right_part):
+                score += 3
+
+            # RÈGLE 2: Si le premier mot à droite a un accent français, c'est probablement le début de la traduction
+            if right_words and any(c in french_chars for c in right_words[0]):
+                score += 2
+
+            # RÈGLE 3: Articles néerlandais à gauche (de, het, een)
+            # Ces articles doivent rester avec le mot qui suit
+            if left_words and left_words[-1].lower() in dutch_articles:
+                # Pénaliser ce split (on ne veut pas séparer "de" de "babysitter")
+                score -= 3
+
+            # RÈGLE 4: Articles néerlandais suivis d'un nom
+            if i > 1 and words[i-2].lower() in dutch_articles:
+                # Favoriser la séparation après l'article + nom
+                score += 2
+
+            # RÈGLE 5: Verbes néerlandais à gauche
+            # Si un verbe néerlandais est le dernier mot à gauche, vérifier le contexte
+            if left_words and left_words[-1].lower() in dutch_verbs:
+                # Si suivi d'un mot néerlandais courant (préposition), ne pas couper ici
+                if right_words and right_words[0].lower() in dutch_common:
+                    score -= 1  # Pénaliser, on préfère couper après la préposition
+                else:
+                    score += 2  # Bon point de séparation
+
+            # RÈGLE 6: Mots néerlandais courants (prépositions) à gauche
+            if left_words and left_words[-1].lower() in dutch_common:
+                # Si c'est suivi d'un mot avec accent français, c'est probablement le bon split
+                if right_words and any(c in french_chars for c in right_words[0]):
+                    score += 3  # Forte priorité pour ce split
+                # Si précédé d'un verbe néerlandais, c'est un bon point de séparation
+                elif len(left_words) >= 2 and left_words[-2].lower() in dutch_verbs:
+                    score += 2
+                else:
+                    # Sinon pénaliser légèrement (ces mots vont souvent avec ce qui suit)
+                    score -= 1
+
+            # RÈGLE 7: Préférer des splits équilibrés (mais moins important)
+            length_balance = abs(len(left_part) - len(right_part))
+            if length_balance < 10:
+                score += 0.5
+
+            # RÈGLE 8: Nombre de mots équilibré
+            word_balance = abs(len(left_words) - len(right_words))
+            if word_balance <= 1:
+                score += 1
+
+            if score > best_score:
+                best_score = score
+                best_split = i
+
+        # Retourner le meilleur split seulement si le score est significatif
+        return best_split if best_score >= 2 else len(words) // 2
