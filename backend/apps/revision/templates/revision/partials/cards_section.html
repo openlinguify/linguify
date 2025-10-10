@@ -1,9 +1,38 @@
 {% load i18n %}
 <!-- Cards Section - Optimisé -->
 <div class="px-3 py-2 border-t border-gray-200">
-    <div class="flex items-center justify-between mb-2">
-        <h6 class="text-sm font-semibold text-linguify-primary mb-0">{% trans "Deck cards" %}</h6>
-        <span id="cardsCount" class="badge-linguify text-xs px-2 py-1">{% trans "0 card(s)" %}</span>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+        <h6 style="font-size: 0.875rem; font-weight: 600; color: #2D5BBA; margin-bottom: 0;">{% trans "Deck cards" %}</h6>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span id="cardsCount" class="badge-linguify" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">{% trans "0 card(s)" %}</span>
+            <!-- Bulk selection controls - ALWAYS VISIBLE FOR DEBUG -->
+            <button id="selectAllCards"
+                    class="btn-linguify-secondary"
+                    style="display: inline-flex !important; font-size: 0.75rem; padding: 0.25rem 0.5rem; cursor: pointer; align-items: center; justify-content: center;"
+                    title="{% trans 'Select all cards' %}">
+                <i class="bi bi-check-square"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bulk actions bar (shown when cards are selected) -->
+    <div id="bulkActionsBar"
+         style="display: none; background-color: #E3F2FD; border: 1px solid #90CAF9; border-radius: 0.5rem; padding: 0.5rem; margin-bottom: 0.5rem; align-items: center; justify-content: space-between;">
+        <span id="selectedCardsCount" style="font-size: 0.875rem; font-weight: 500; color: #1976D2;">0 {% trans "selected" %}</span>
+        <div style="display: flex; gap: 0.5rem;">
+            <button id="deselectAllCards"
+                    class="btn-linguify-secondary"
+                    style="font-size: 0.75rem; padding: 0.25rem 0.5rem; cursor: pointer;">
+                <i class="bi bi-x-lg" style="margin-right: 0.25rem;"></i>
+                {% trans "Deselect all" %}
+            </button>
+            <button id="deleteSelectedCards"
+                    class="btn btn-danger"
+                    style="font-size: 0.75rem; padding: 0.25rem 0.5rem; cursor: pointer; background-color: #dc3545; color: white; border: none; border-radius: 0.25rem;">
+                <i class="bi bi-trash" style="margin-right: 0.25rem;"></i>
+                {% trans "Delete selection" %}
+            </button>
+        </div>
     </div>
     
     <!-- Language Settings for the Deck - Compact -->

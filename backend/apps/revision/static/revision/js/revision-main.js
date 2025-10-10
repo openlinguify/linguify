@@ -13,6 +13,7 @@ let appState = {
     isRefreshing: false, // New state for refresh operations
     currentPage: 1,
     hasMore: true,
+    selectedCards: new Set(), // Track selected card IDs for bulk actions
     stats: {
         totalDecks: 0,
         totalCards: 0,
@@ -493,10 +494,13 @@ function updateNavbarActions(showGeneralActions = true) {
 // UI Management Functions
 async function selectDeck(deckId) {
     try {
+        // Clear card selection when switching decks
+        appState.selectedCards.clear();
+
         // Check authentication first
         const authCheck = await window.apiService.request('/api/v1/revision/debug/auth/');
         console.log('🔐 Auth check:', authCheck);
-        
+
         if (!authCheck.authenticated) {
             console.error('❌ User not authenticated');
             window.notificationService.error(
@@ -505,15 +509,15 @@ async function selectDeck(deckId) {
             );
             return;
         }
-        
+
         console.log(`✅ User authenticated as: ${authCheck.user} (ID: ${authCheck.user_id})`);
-        
+
         const deck = await revisionAPI.getDeck(deckId);
         appState.selectedDeck = deck;
-        
+
         // Update share button text based on deck visibility
         updateShareButtonText();
-        
+
         // Hide all sections first
         hideAllSections();
         
@@ -934,26 +938,38 @@ async function loadDeckCards() {
         elements.cardsContainer.innerHTML = filteredCards.map((card, index) => {
             const cardId = card.id || card.pk || `temp-${deckId}-${index}`;
             console.log('Rendering card with ID:', cardId, 'Card object:', card);
-            
+            const isSelected = appState.selectedCards.has(cardId);
+
             return `
-            <div class="card mb-3 position-relative" data-card-id="${cardId}">
+            <div class="card mb-3 position-relative ${isSelected ? 'border-primary shadow-sm' : ''}" data-card-id="${cardId}">
+                <!-- Selection checkbox -->
+                <div class="position-absolute" style="top: 8px; left: 8px; z-index: 10;">
+                    <input type="checkbox"
+                           class="form-check-input card-select-checkbox"
+                           data-card-id="${cardId}"
+                           ${isSelected ? 'checked' : ''}
+                           style="cursor: pointer; width: 18px; height: 18px;"
+                           title="${_('Select card')}">
+                </div>
+
+                <!-- Action buttons -->
                 <div class="position-absolute" style="top: 8px; right: 8px; z-index: 10;">
                     <div class="d-flex gap-2">
-                        <button class="btn btn-link p-0" 
-                                onclick="window.revisionMain?.editCard(${cardId})" 
+                        <button class="btn btn-link p-0"
+                                onclick="window.revisionMain?.editCard(${cardId})"
                                 title="${_('Edit')}"
                                 style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-link p-0" 
-                                onclick="window.revisionMain?.deleteCard(${cardId})" 
+                        <button class="btn btn-link p-0"
+                                onclick="window.revisionMain?.deleteCard(${cardId})"
                                 title="${_('Delete')}"
                                 style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="padding-left: 2.5rem;">
                     <div class="row align-items-center">
                         <div class="col-md-5">
                             <p class="card-text card-front-text mb-0">${card.front_text || ''}</p>
@@ -984,13 +1000,218 @@ async function loadDeckCards() {
             </div>
             `;
         }).join('');
-        
+
+        // Attach event listeners to checkboxes
+        attachCardSelectionListeners();
+
+        // Show "Select All" button if there are cards
+        const selectAllBtn = document.getElementById('selectAllCards');
+        if (selectAllBtn && filteredCards.length > 0) {
+            selectAllBtn.style.display = 'inline-flex';
+        }
+
+        // Update bulk actions UI
+        updateBulkActionsUI();
+
     } catch (error) {
         console.error('Error loading deck cards:', error);
         window.notificationService.error(_('Error loading cards'));
     } finally {
         appState.isLoadingCards = false;
     }
+}
+
+// Attach event listeners to card selection checkboxes
+function attachCardSelectionListeners() {
+    const checkboxes = document.querySelectorAll('.card-select-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function(e) {
+            e.stopPropagation();
+            const cardId = parseInt(this.dataset.cardId);
+
+            if (this.checked) {
+                appState.selectedCards.add(cardId);
+            } else {
+                appState.selectedCards.delete(cardId);
+            }
+
+            // Update visual feedback
+            const cardElement = this.closest('.card');
+            if (this.checked) {
+                cardElement.classList.add('border-primary', 'shadow-sm');
+            } else {
+                cardElement.classList.remove('border-primary', 'shadow-sm');
+            }
+
+            updateBulkActionsUI();
+        });
+    });
+}
+
+// Update bulk actions UI based on selected cards
+function updateBulkActionsUI() {
+    const bulkActionsBar = document.getElementById('bulkActionsBar');
+    const selectedCardsCount = document.getElementById('selectedCardsCount');
+    const selectAllBtn = document.getElementById('selectAllCards');
+
+    const count = appState.selectedCards.size;
+
+    if (count > 0) {
+        // Show bulk actions bar
+        if (bulkActionsBar) {
+            bulkActionsBar.style.display = 'flex';
+            if (selectedCardsCount) {
+                selectedCardsCount.textContent = `${count} ${_('selected')}`;
+            }
+        }
+    } else {
+        // Hide bulk actions bar
+        if (bulkActionsBar) {
+            bulkActionsBar.style.display = 'none';
+        }
+    }
+
+    // Update "Select All" button icon
+    if (selectAllBtn) {
+        const allCheckboxes = document.querySelectorAll('.card-select-checkbox');
+        const allChecked = allCheckboxes.length > 0 && count === allCheckboxes.length;
+        const icon = selectAllBtn.querySelector('i');
+        if (icon) {
+            icon.className = allChecked ? 'bi bi-check-square-fill' : 'bi bi-check-square';
+        }
+    }
+}
+
+// Select all cards in the current deck
+function selectAllCards() {
+    const checkboxes = document.querySelectorAll('.card-select-checkbox');
+    const allChecked = appState.selectedCards.size === checkboxes.length;
+
+    checkboxes.forEach(checkbox => {
+        const cardId = parseInt(checkbox.dataset.cardId);
+        const cardElement = checkbox.closest('.card');
+
+        if (allChecked) {
+            // Deselect all
+            checkbox.checked = false;
+            appState.selectedCards.delete(cardId);
+            cardElement.classList.remove('border-primary', 'shadow-sm');
+        } else {
+            // Select all
+            checkbox.checked = true;
+            appState.selectedCards.add(cardId);
+            cardElement.classList.add('border-primary', 'shadow-sm');
+        }
+    });
+
+    updateBulkActionsUI();
+}
+
+// Deselect all cards
+function deselectAllCards() {
+    const checkboxes = document.querySelectorAll('.card-select-checkbox');
+
+    checkboxes.forEach(checkbox => {
+        const cardId = parseInt(checkbox.dataset.cardId);
+        const cardElement = checkbox.closest('.card');
+
+        checkbox.checked = false;
+        appState.selectedCards.delete(cardId);
+        cardElement.classList.remove('border-primary', 'shadow-sm');
+    });
+
+    appState.selectedCards.clear();
+    updateBulkActionsUI();
+}
+
+// Delete selected cards with confirmation
+async function deleteSelectedCards() {
+    if (appState.selectedCards.size === 0) {
+        return;
+    }
+
+    const count = appState.selectedCards.size;
+    const confirmMessage = count === 1
+        ? _('Are you sure you want to delete this card?')
+        : `${_('Are you sure you want to delete')} ${count} ${_('cards')}?`;
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    try {
+        const cardIds = Array.from(appState.selectedCards);
+        let successCount = 0;
+        let failCount = 0;
+
+        // Show loading state
+        const deleteBtn = document.getElementById('deleteSelectedCards');
+        if (deleteBtn) {
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>' + _('Deleting...');
+        }
+
+        // Delete cards one by one
+        for (const cardId of cardIds) {
+            try {
+                await revisionAPI.deleteCard(cardId);
+                successCount++;
+
+                // Remove card element from DOM immediately
+                const cardElement = document.querySelector(`.card[data-card-id="${cardId}"]`);
+                if (cardElement) {
+                    cardElement.remove();
+                }
+            } catch (error) {
+                console.error(`Failed to delete card ${cardId}:`, error);
+                failCount++;
+            }
+        }
+
+        // Clear selection
+        appState.selectedCards.clear();
+        updateBulkActionsUI();
+
+        // Show success message
+        if (successCount > 0) {
+            const message = successCount === 1
+                ? _('Card deleted successfully')
+                : `${successCount} ${_('cards deleted successfully')}`;
+            window.notificationService.success(message);
+        }
+
+        if (failCount > 0) {
+            window.notificationService.error(`${failCount} ${_('cards could not be deleted')}`);
+        }
+
+        // Reload deck to update counts
+        if (appState.selectedDeck) {
+            await loadDeckCards(appState.selectedDeck.id);
+            // Refresh deck stats
+            const deckData = await revisionAPI.getDeck(appState.selectedDeck.id);
+            updateDeckUI(deckData);
+        }
+
+    } catch (error) {
+        console.error('Error deleting selected cards:', error);
+        window.notificationService.error(_('Error deleting cards'));
+    } finally {
+        // Reset button state
+        const deleteBtn = document.getElementById('deleteSelectedCards');
+        if (deleteBtn) {
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>' + _('Delete selection');
+        }
+    }
+}
+
+// Add deleteCard API method if it doesn't exist
+if (!revisionAPI.deleteCard) {
+    revisionAPI.deleteCard = async function(cardId) {
+        return await window.apiService.request(`/api/v1/revision/api/flashcards/${cardId}/`, {
+            method: 'DELETE'
+        });
+    };
 }
 
 function backToDeckView() {
@@ -4450,7 +4671,12 @@ function setupEventListeners() {
     
     elements.backToList?.addEventListener('click', backToList);
     elements.addCard?.addEventListener('click', showCreateCardForm);
-    
+
+    // Bulk card selection buttons
+    document.getElementById('selectAllCards')?.addEventListener('click', selectAllCards);
+    document.getElementById('deselectAllCards')?.addEventListener('click', deselectAllCards);
+    document.getElementById('deleteSelectedCards')?.addEventListener('click', deleteSelectedCards);
+
     // Study mode buttons
     document.getElementById('studyFlashcards')?.addEventListener('click', startFlashcardsMode);
     document.getElementById('studyLearn')?.addEventListener('click', startLearnMode);
